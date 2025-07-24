@@ -49,7 +49,7 @@ onMounted(() => {
 
     template.Camera.getWorldPosition(WorldPosition);
     HandleKeyboard();
-    //HandleWorkers();
+    HandleWorkers();
 
     HandleTeleports();
     //HandleEnv();
@@ -303,7 +303,7 @@ const HandleWorkers = async () => {
     };
 
     const worker = Workers();
-    const data = await worker.get('https://fakestoreapi.com/products', payload);
+    const data = await worker.get('https://market.pandangtakjemu.com/jellyfish/get/product/http', payload);
 
     HandleContent(data);
 
