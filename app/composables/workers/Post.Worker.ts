@@ -23,6 +23,7 @@ self.onmessage = async function (e: MessageEvent<WorkerRequest>) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(payload),
+            credentials: 'include'
         });
         console.log(response)
         // const contentType = response.headers.get('Content-Type') || '';
