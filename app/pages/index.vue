@@ -49,7 +49,7 @@ onMounted(() => {
 
     template.Camera.getWorldPosition(WorldPosition);
     HandleKeyboard();
-    HandleWorkers();
+    //HandleWorkers();
 
     HandleTeleports();
     //HandleEnv();
@@ -130,15 +130,15 @@ const HandleTeleports = async () => {
 
 const HandleKeyboard = () => {
     keyboard = new L3.Keyboard();
-    keyboard.position.set(WorldPosition.x + .5, WorldPosition.y, -.4);
+    keyboard.position.set(WorldPosition.x, WorldPosition.y, -.4);
     template?.Scene.add(keyboard);
 
     usernameField = new L3.InputField({ label: 'Username' });
-    usernameField.position.set(WorldPosition.x + .5, WorldPosition.y + .2, -.425)
+    usernameField.position.set(WorldPosition.x, WorldPosition.y + .2, -.425)
     template?.Scene.add(usernameField);
 
     passwordField = new L3.InputField({ label: 'Password' });
-    passwordField.position.set(WorldPosition.x + .5, WorldPosition.y + .1, -.425)
+    passwordField.position.set(WorldPosition.x, WorldPosition.y + .1, -.425)
     template?.Scene.add(passwordField);
 
     register.addFeatures({
