@@ -19,11 +19,12 @@ self.onmessage = async function (e: MessageEvent<WorkerRequest>) {
 
         const response = await fetch(url, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify(payload),
         });
-
-        console.log(response);
-
+        console.log(response)
         // const contentType = response.headers.get('Content-Type') || '';
 
         // let parsed: any;
@@ -35,7 +36,7 @@ self.onmessage = async function (e: MessageEvent<WorkerRequest>) {
 
         // console.log('[Worker] Parsed response:', parsed);
 
-        //self.postMessage({ success: response.ok, data: parsed, error: !response.ok ? `HTTP ${response.status}` : undefined } satisfies WorkerResponse);
+        // self.postMessage({ success: response.ok, data: parsed, error: !response.ok ? `HTTP ${response.status}` : undefined } satisfies WorkerResponse);
 
     } catch (error: any) {
         self.postMessage({ success: false, error: error.message } satisfies WorkerResponse);
