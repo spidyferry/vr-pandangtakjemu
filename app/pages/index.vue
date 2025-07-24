@@ -354,7 +354,7 @@ const HandleContent = async (data: any) => {
         image.position.set(rawBoundingBox.max.x * 0.7, 0, 0.001);
         card.add(image);
 
-        const title = handleTitle(item.title, rawBoundingBox, width);
+        const title = handleTitle(item.name, rawBoundingBox, width);
         card.add(title);
 
         const buyButton = handleButtonBuy(width, height);
