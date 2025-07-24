@@ -42,7 +42,7 @@ export class InputField extends THREE.Group {
         this.add(this._title);
 
 
-        this.name = 'InputField';
+        this.name = label;
     }
 
     public get value(): string {

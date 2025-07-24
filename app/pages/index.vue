@@ -134,12 +134,10 @@ const HandleKeyboard = () => {
     template?.Scene.add(keyboard);
 
     usernameField = new L3.InputField({ label: 'Username' });
-    usernameField.name = 'username field';
     usernameField.position.set(WorldPosition.x, WorldPosition.y + .2, -.425)
     template?.Scene.add(usernameField);
 
     passwordField = new L3.InputField({ label: 'Password' });
-    passwordField.name = 'password field';
     passwordField.position.set(WorldPosition.x, WorldPosition.y + .1, -.425)
     template?.Scene.add(passwordField);
 

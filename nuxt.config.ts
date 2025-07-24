@@ -4,27 +4,29 @@ export default defineNuxtConfig({
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
-      title: 'Nuxt 4 - VR',
+      title: 'Kampung VR | PandangTakJemu',
       htmlAttrs: {
-        lang: 'en',
+        lang: 'id',
       },
       meta: [
-        { name: 'description', content: 'Nuxt 4 is the powerful web framework for building modern, blazing-fast websites and apps with Vue.' },
+        {
+          name: 'description',
+          content: 'Kampung VR adalah pengalaman virtual reality imersif dari PandangTakJemu untuk menjelajahi kampung dan budaya lokal secara digital.'
+        },
         { name: 'robots', content: 'index, follow' },
-        { name: 'author', content: 'Wildy13 (https://github.com/wildy13)' },
-        { name: 'keywords', content: 'Nuxt 4, Vue.js, Web Development, SEO, SSR, Jamstack' },
+        { name: 'author', content: 'PandangTakJemu Team (https://vr.pandangtakjemu.com/)' },
+        { name: 'keywords', content: 'Virtual Reality, Kampung, Budaya Indonesia, VR Indonesia, Edukasi Digital, PandangTakJemu' },
 
-        { property: 'og:title', content: 'Nuxt 4 - Build the Web Smarter' },
-        { property: 'og:description', content: 'Discover Nuxt 4 — The ultimate Vue framework for high-performance web apps.' },
+        { property: 'og:title', content: 'Kampung VR | PandangTakJemu' },
+        { property: 'og:description', content: 'Masuki dunia virtual kampung Indonesia dengan pengalaman edukatif dan imersif dari PandangTakJemu.' },
         { property: 'og:type', content: 'website' },
-        { property: 'og:url', content: 'https://www.yoursite.com' },
-        { property: 'og:image', content: 'https://www.yoursite.com/og-image.jpg' },
+        { property: 'og:url', content: 'https://vr.pandangtakjemu.com/' },
+        { property: 'og:image', content: 'https://www.pandangtakjemu.com/assets/img/bg.jpg' },
 
-        { name: 'github:creator', content: '@wildy13' },
-        { name: 'github:profile', content: 'https://github.com/wildy13' }
-      ],
-      link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: 'Kampung VR | PandangTakJemu' },
+        { name: 'twitter:description', content: 'Jelajahi budaya kampung Indonesia dalam dunia virtual yang interaktif dan mendalam.' },
+        { name: 'twitter:image', content: 'https://www.pandangtakjemu.com/assets/img/bg.jpg' }
       ]
     },
   },
