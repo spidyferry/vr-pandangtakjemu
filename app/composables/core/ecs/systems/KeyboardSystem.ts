@@ -35,7 +35,7 @@ export class KeyboardSystem extends System {
                                 console.log('[KeyboardSystem] Sending payload to worker:', payload);
 
                                 this.worker.postMessage({
-                                    url: 'https://market.pandangtakjemu.com/action/jellyfish/credential/user  ',
+                                    url: 'https://market.pandangtakjemu.com/action/jellyfish/credential/user',
                                     payload,
                                 });
 
