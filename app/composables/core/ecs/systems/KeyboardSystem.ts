@@ -4,7 +4,16 @@ import { KeyboardComponent } from '../components/KeyboardComponent';
 import { Keyboard } from '../../../helpers/Keyboard';
 
 export class KeyboardSystem extends System {
-    override init(attributes?: Attributes): void { }
+    private worker!: Worker;
+
+    override init(attributes?: Attributes): void {
+        this.worker = new Worker(
+            new URL('../../../workers/Post.Worker.ts', import.meta.url),
+            { type: 'module' }
+        );
+
+        console.log(this.worker)
+    }
 
     execute(delta: number, time: number): void {
         this.queries.keyboard?.results.forEach(entity => {
@@ -18,8 +27,28 @@ export class KeyboardSystem extends System {
                         if (object?.parent instanceof Keyboard) {
 
                             if (object.userData.label === 'enter') {
-                                console.log(component.keyboard?.inputValues);
+                                const payload = {
+                                    username: "admin",
+                                    password: "123"
+                                };
+
+                                console.log('[KeyboardSystem] Sending payload to worker:', payload);
+
+                                this.worker.postMessage({
+                                    url: 'https://market.pandangtakjemu.com/action/jellyfish/credential/user  ',
+                                    payload,
+                                });
+
+                                this.worker.onmessage = (e) => {
+                                    const { success, data, error } = e.data;
+                                    if (success) {
+                                        console.log('[KeyboardSystem] Worker response:', data);
+                                    } else {
+                                        console.error('[KeyboardSystem] Worker error:', error);
+                                    }
+                                };
                             }
+
                             object.parent.handleKeyPress(object.userData.label);
                         }
                     }
