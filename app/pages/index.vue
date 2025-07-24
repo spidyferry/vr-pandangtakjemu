@@ -333,6 +333,15 @@ const HandleContent = async (data: any) => {
     for (let i = 0; i < length; i++) {
         const item = data[i];
 
+        if (!item.quantity) item.quantity = 1;
+        if (!item.rating) {
+            item.rating = {
+                rate: 4.9,
+                count: 120
+            };
+        }
+
+
         const card = handleCard(width, height);
         card.userData.itemId = item.id;
         card.position.set(i * CardSpacing, 0, 0.001);
