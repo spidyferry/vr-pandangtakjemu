@@ -1,0 +1,27 @@
+export const FONT_MAP = {
+  'inter-inter-italic-variablefont-opsz,wght': '/fonts/Inter/Inter-Italic-VariableFont_opsz,wght.ttf',
+  'inter-inter-variablefont-opsz,wght': '/fonts/Inter/Inter-VariableFont_opsz,wght.ttf',
+  'inter-18pt-black': '/fonts/Inter/static/Inter_18pt-Black.ttf',
+  'inter-18pt-blackitalic': '/fonts/Inter/static/Inter_18pt-BlackItalic.ttf',
+  'inter-18pt-bold': '/fonts/Inter/static/Inter_18pt-Bold.ttf',
+  'inter-18pt-bolditalic': '/fonts/Inter/static/Inter_18pt-BoldItalic.ttf',
+  'inter-18pt-extrabold': '/fonts/Inter/static/Inter_18pt-ExtraBold.ttf',
+  'inter-18pt-extrabolditalic': '/fonts/Inter/static/Inter_18pt-ExtraBoldItalic.ttf',
+  'inter-18pt-extralight': '/fonts/Inter/static/Inter_18pt-ExtraLight.ttf',
+  'inter-18pt-extralightitalic': '/fonts/Inter/static/Inter_18pt-ExtraLightItalic.ttf',
+  'inter-18pt-light': '/fonts/Inter/static/Inter_18pt-Light.ttf',
+  'inter-18pt-lightitalic': '/fonts/Inter/static/Inter_18pt-LightItalic.ttf',
+  'inter-18pt-medium': '/fonts/Inter/static/Inter_18pt-Medium.ttf',
+  'inter-18pt-mediumitalic': '/fonts/Inter/static/Inter_18pt-MediumItalic.ttf',
+  'inter-18pt-regular': '/fonts/Inter/static/Inter_18pt-Regular.ttf',
+  'inter-18pt-semibold': '/fonts/Inter/static/Inter_18pt-SemiBold.ttf',
+  'inter-18pt-semibolditalic': '/fonts/Inter/static/Inter_18pt-SemiBoldItalic.ttf',
+  'space-grotesk-spacegrotesk-variablefont-wght': '/fonts/Space_Grotesk/SpaceGrotesk-VariableFont_wght.ttf',
+  'space-grotesk-bold': '/fonts/Space_Grotesk/static/SpaceGrotesk-Bold.ttf',
+  'space-grotesk-light': '/fonts/Space_Grotesk/static/SpaceGrotesk-Light.ttf',
+  'space-grotesk-medium': '/fonts/Space_Grotesk/static/SpaceGrotesk-Medium.ttf',
+  'space-grotesk-regular': '/fonts/Space_Grotesk/static/SpaceGrotesk-Regular.ttf',
+  'space-grotesk-semibold': '/fonts/Space_Grotesk/static/SpaceGrotesk-SemiBold.ttf',
+} as const;
+
+export type FontKey = keyof typeof FONT_MAP;
