@@ -341,7 +341,7 @@ const HandleContent = async (data: any) => {
         const rawBoundingBox = card.geometry.boundingBox;
         if (!rawBoundingBox) return;
 
-        const image = await handleImage(item.image, width, height);
+        const image = await handleImage(item.image ?? item.link_image, width, height);
         image.position.set(rawBoundingBox.max.x * 0.7, 0, 0.001);
         card.add(image);
 
