@@ -1,3 +1,4 @@
+import { HDRJPGLoader } from "@monogrid/gainmap-js";
 import {
     CircleGeometry,
     DoubleSide,
@@ -9,7 +10,8 @@ import {
     MeshStandardMaterial,
     PlaneGeometry,
     Texture,
-    Vector3
+    Vector3,
+    WebGLRenderer
 } from "three";
 import { RGBELoader } from "three/examples/jsm/Addons.js";
 
@@ -25,6 +27,7 @@ type DefaultOptions = {
 type PointOptions = {
     type: 'point';
     loadingManager?: LoadingManager;
+    renderer?: WebGLRenderer;
     pointData?: {
         env: string[];
         config: {
@@ -38,6 +41,7 @@ type TeleportHelperOptions = DefaultOptions | PointOptions;
 
 export class TeleportHelper {
     private _loadingManager?: LoadingManager;
+    private _renderer?: WebGLRenderer;
 
     public groups: Group[] = [];
 
@@ -53,6 +57,9 @@ export class TeleportHelper {
         const helper = new TeleportHelper();
         helper._loadingManager = options.loadingManager;
 
+        if (options.type === 'point') {
+            helper._renderer = options.renderer;
+        }
         switch (options.type) {
             case 'default':
                 helper._createDefault(options.defaultData);
@@ -98,7 +105,7 @@ export class TeleportHelper {
 
         await Promise.all(
             data.env.map((path, index) =>
-                this._loadHDR(path).then(texture => {
+                this._loadEnv(path).then(texture => {
                     texture.name = `HDR_${index}`;
                     this.hdrTextures[index] = texture;
                 })
@@ -122,7 +129,7 @@ export class TeleportHelper {
                 const targetIndex = config.target[pointIndex];
                 if (typeof targetIndex === 'number') {
                     circle.userData.texture = this.hdrTextures[targetIndex];
-                    circle.userData.target = targetIndex;               
+                    circle.userData.target = targetIndex;
                 }
 
                 group.add(circle);
@@ -133,20 +140,39 @@ export class TeleportHelper {
         });
     }
 
-    private _loadHDR(path: string): Promise<Texture> {
-        return new Promise((resolve, reject) => {
-            new RGBELoader(this._loadingManager).load(
-                path,
-                texture => {
-                    texture.mapping = EquirectangularReflectionMapping;
-                    resolve(texture);
-                },
-                undefined,
-                err => {
-                    console.error(`Failed to load HDR: ${path}`, err);
-                    reject(err);
-                }
-            );
-        });
+    private _loadEnv(path: string): Promise<Texture> {
+        const isJPG = path.endsWith('.jpg') || path.endsWith('.jpeg') || path.endsWith('.png');
+
+        const loader = isJPG
+            ? new HDRJPGLoader(this._renderer)
+            : new RGBELoader(this._loadingManager);
+
+        if (isJPG) {
+            const loader = new HDRJPGLoader(this._renderer);
+            return new Promise(async (resolve, reject) => {
+                const result = await loader.loadAsync(path);
+                const texture = result.renderTarget?.texture;
+                if (!texture) return;
+
+                result.dispose();
+                resolve(texture);
+            })
+        } else {
+            const loader = new RGBELoader();
+            return new Promise((resolve, reject) => {
+                loader.load(
+                    path,
+                    texture => {
+                        texture.mapping = EquirectangularReflectionMapping;
+                        resolve(texture);
+                    },
+                    undefined,
+                    err => {
+                        console.error(`Failed to load HDR: ${path}`, err);
+                        reject(err);
+                    }
+                );
+            })
+        }
     }
 }

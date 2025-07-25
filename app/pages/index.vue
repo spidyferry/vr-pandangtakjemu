@@ -56,10 +56,11 @@ const HandleTeleports = async () => {
 
     const teleport = await TeleportHelper.create({
         type: 'point',
+        renderer: template.Renderer,
         loadingManager: template?.LoadingManager,
         pointData: {
             env: [
-                '/hdr/1.hdr',
+                '/hdr/1.jpg',
                 '/hdr/2.hdr',
                 '/hdr/3.hdr',
                 '/hdr/4.hdr',
@@ -108,9 +109,9 @@ const HandleTeleports = async () => {
 
     const env = teleport.hdrTextures[0];
     if (env && template?.Scene) {
-        env.mapping = THREE.EquirectangularReflectionMapping;
         template.Scene.environment = env;
         template.Scene.background = env;
+        template.Scene.background.mapping = THREE.EquirectangularReflectionMapping
     }
 
     register.addFeatures({
