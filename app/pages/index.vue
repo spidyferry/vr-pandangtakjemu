@@ -45,7 +45,7 @@ onMounted(() => {
 
 
     template.Camera.getWorldPosition(WorldPosition);
-    //HandleKeyboard();
+    HandleKeyboard();
     HandleWorkers();
 
     HandleTeleports();
@@ -211,7 +211,7 @@ const HandleWorkers = async () => {
     };
 
     const worker = Workers();
-    const data = await worker.get('https://fakestoreapi.com/products', payload);
+    const data = await worker.get('https://market.pandangtakjemu.com/jellyfish/get/product/http', payload);
 
     HandleContent(data);
 
@@ -614,7 +614,7 @@ const animate = () => {
     }
 
     if (carousel && template?.Camera) {
-        carousel.followCamera(template?.Camera); 
+        carousel.followCamera(template?.Camera);
     }
 
     template?.render();
