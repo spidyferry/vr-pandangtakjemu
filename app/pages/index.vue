@@ -52,11 +52,13 @@ onMounted(() => {
 });
 
 const HandleTeleports = async () => {
+    if (!template?.Renderer) return;
+
     const teleport = await TeleportHelper.create({
         type: 'point',
         loadingManager: template?.LoadingManager,
         pointData: {
-            hdr: [
+            env: [
                 '/hdr/1.hdr',
                 '/hdr/2.hdr',
                 '/hdr/3.hdr',
@@ -211,7 +213,7 @@ const HandleWorkers = async () => {
     };
 
     const worker = Workers();
-    const data = await worker.get('https://market.pandangtakjemu.com/jellyfish/get/product/http', payload);
+    const data = await worker.get('https://fakestoreapi.com/products', payload);
 
     HandleContent(data);
 

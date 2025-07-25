@@ -4,15 +4,13 @@ import { KeyboardComponent } from '../components/KeyboardComponent';
 import { Keyboard } from '../../../helpers/Keyboard';
 
 export class KeyboardSystem extends System {
-    private worker!: Worker;
+    private worker?: Worker;
 
     override init(attributes?: Attributes): void {
         this.worker = new Worker(
             new URL('../../../workers/Post.Worker.ts', import.meta.url),
             { type: 'module' }
         );
-
-        console.log(this.worker)
     }
 
     execute(delta: number, time: number): void {
@@ -33,6 +31,8 @@ export class KeyboardSystem extends System {
                                 };
 
                                 console.log('[KeyboardSystem] Sending payload to worker:', payload);
+
+                                if (!this.worker) return;
 
                                 this.worker.postMessage({
                                     url: 'https://market.pandangtakjemu.com/action/jellyfish/credential/user',

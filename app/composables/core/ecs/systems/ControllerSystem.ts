@@ -24,55 +24,78 @@ export class ControllerSystem extends System {
     }
 
     execute(delta: number, time: number): void {
-        this.queries.controllers?.results.forEach(entity => {
-            const components = entity.getComponent(ControllerComponent);
+        const currentlyHovered = new Set<Entity>();
 
-            if (!components) return;
-            const session = components?.renderer.xr.getSession();
-            const object = entity.getComponent(Object3DComponent)?.object;
+        // Loop inputSources → langsung cocokkan controller-nya
+        this.queries.controllers?.results.forEach(controllerEntity => {
+            const components = controllerEntity.getComponent(ControllerComponent);
+            const object = controllerEntity.getComponent(Object3DComponent)?.object;
+            if (!components || !object) return;
 
+            const session = components.renderer.xr.getSession();
             if (!session) return;
 
-            session.inputSources.forEach((source: XRInputSource & { gamepad: Gamepad; }) => {
-                components.controllers.forEach((c: THREE.Group) => {
-                    const handedness = c.userData.handedness;
+            session.inputSources.forEach((source: XRInputSource & { gamepad: Gamepad }) => {
+                const handedness = source.handedness;
 
-                    if (source.handedness !== handedness) return;
-                    this._handleJoystic(source, c, entity, delta);
-                    if (!object) return;
-                    const intersections = this._getIntersections(c, object);
+                // Ambil controller sesuai handedness
+                const controller = components.controllers.find(c => c.userData.handedness === handedness);
+                if (!controller) return;
 
-                    if (intersections.length > 0) {
-                        const intersection = intersections[0];
+                this._handleJoystic(source, controller, controllerEntity, delta);
 
-                        if (!intersection) return;
+                // Raycast hanya jika arah controller mendekati objek (opsional: pakai bounding box precheck)
+                const intersections = this._getIntersections(controller, object);
+                const intersection = intersections[0];
+                const gamepad = source.gamepad;
 
-                        if (c.userData.lineReset) c.userData.lineReset = false;
-                        if (!c.userData.isHover) c.userData.isHover = true;
-
-                        if ('gamepad' in source && source.gamepad) {
-                            const gamepad = (source as XRInputSource & { gamepad: Gamepad }).gamepad;
-
-                            this._onHover(source, entity, gamepad, intersection);
-                            this._updateLine(c, intersection);
-
-                            gamepad.buttons.forEach((b: GamepadButton, i: number) => {
-                                this._handleButton(b, i, c, entity, intersection, gamepad, components.renderer);
-                            });
-                        }
-
-                    } else {
-                        if (!c.userData.lineReset) {
-                            this._resetLine(c);
-                            c.userData.lineReset = true;
-                        }
-
-                        this._onUnhover(entity);
+                if (intersection) {
+                    if (!controller.userData.isHover) {
+                        controller.userData.isHover = true;
+                        controller.userData.lineReset = false;
                     }
-                });
+
+                    currentlyHovered.add(controllerEntity);
+
+                    this._onHover(source, controllerEntity, gamepad, intersection);
+                    this._updateLine(controller, intersection);
+
+                    // Proses tombol hanya jika benar-benar ditekan
+                    gamepad?.buttons.forEach((b: GamepadButton, i: number) => {
+                        if (handedness !== 'left' && handedness !== 'right') return; // skip "none"
+
+                        const prev = this.previousButtonStates[handedness]?.[i];
+                        if (b.pressed || prev) {
+                            this._handleButton(b, i, controller, controllerEntity, intersection, gamepad, components.renderer);
+                        }
+                    });
+
+
+                } else {
+                    if (!controller.userData.lineReset) {
+                        this._resetLine(controller);
+                        controller.userData.lineReset = true;
+                        controller.userData.isHover = false;
+                    }
+                }
             });
         });
+
+        this.queries.interactables?.results.forEach(entity => {
+            if (
+                (entity.hasComponent(ButtonComponent) ||
+                    entity.hasComponent(KeyboardComponent) ||
+                    entity.hasComponent(CarouselComponent) ||
+                    entity.hasComponent(TeleportPointComponent)) &&
+                !currentlyHovered.has(entity)
+            ) {
+                this._onUnhover(entity);
+            }
+        });
+
     }
+
+
 
 
     private _onHover(source: XRInputSource, entity: Entity, gamepad: Gamepad, intersection: THREE.Intersection) {
@@ -429,6 +452,10 @@ export class ControllerSystem extends System {
 
 ControllerSystem.queries = {
     controllers: {
-        components: [ControllerComponent]
+        components: [ControllerComponent, Object3DComponent]
     },
+    interactables: {
+        components: [Object3DComponent]
+    }
 };
+

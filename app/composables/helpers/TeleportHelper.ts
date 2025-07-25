@@ -8,13 +8,11 @@ import {
     MeshBasicMaterial,
     MeshStandardMaterial,
     PlaneGeometry,
-    Scene,
     Texture,
     Vector3
 } from "three";
 import { RGBELoader } from "three/examples/jsm/Addons.js";
 
-/** Options for the default teleport mode */
 type DefaultOptions = {
     type: 'default';
     loadingManager?: LoadingManager;
@@ -24,12 +22,11 @@ type DefaultOptions = {
     };
 };
 
-/** Options for point-based teleport mode */
 type PointOptions = {
     type: 'point';
     loadingManager?: LoadingManager;
     pointData?: {
-        hdr: string[];
+        env: string[];
         config: {
             points: Vector3[];
             target: number[];
@@ -39,27 +36,19 @@ type PointOptions = {
 
 type TeleportHelperOptions = DefaultOptions | PointOptions;
 
-/** Helper class to create teleportation markers and HDR environments */
 export class TeleportHelper {
     private _loadingManager?: LoadingManager;
 
-    /** Teleportation groups per HDR environment */
     public groups: Group[] = [];
 
-    /** Loaded HDR textures mapped by index */
     public hdrTextures: Record<number, Texture> = {};
 
-    /** Default teleport marker */
     public marker?: Mesh;
 
-    /** Optional floor mesh */
     public floor?: Mesh;
 
     private constructor() { }
 
-    /**
-     * Factory method to create a teleport helper
-     */
     static async create(options: TeleportHelperOptions): Promise<TeleportHelper> {
         const helper = new TeleportHelper();
         helper._loadingManager = options.loadingManager;
@@ -76,9 +65,6 @@ export class TeleportHelper {
         return helper;
     }
 
-    /**
-     * Show only a specific group based on index, hide the rest
-     */
     public showGroup(index: number) {
         this.groups.forEach((group, i) => {
             group.visible = i === index;
@@ -102,17 +88,16 @@ export class TeleportHelper {
     }
 
     private async _createPointBased(data?: {
-        hdr: string[];
+        env: string[];
         config: {
             points: Vector3[];
             target: number[];
         }[];
     }) {
-        if (!data?.hdr?.length || !this._loadingManager) return;
+        if (!data?.env?.length || !this._loadingManager) return;
 
-        // Load all HDR textures
         await Promise.all(
-            data.hdr.map((path, index) =>
+            data.env.map((path, index) =>
                 this._loadHDR(path).then(texture => {
                     texture.name = `HDR_${index}`;
                     this.hdrTextures[index] = texture;
@@ -120,7 +105,6 @@ export class TeleportHelper {
             )
         );
 
-        // Create teleport groups based on config
         data.config.forEach((config, groupIndex) => {
             const group = new Group();
             group.name = `TeleportGroup_${groupIndex}`;
