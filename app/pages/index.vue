@@ -213,6 +213,7 @@ const HandleWorkers = async () => {
     };
 
     const worker = Workers();
+    // https://market.pandangtakjemu.com/jellyfish/get/product/http
     const data = await worker.get('https://fakestoreapi.com/products', payload);
 
     HandleContent(data);
