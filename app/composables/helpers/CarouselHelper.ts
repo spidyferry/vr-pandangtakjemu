@@ -50,7 +50,6 @@ export class CarouselHelper extends Mesh {
         const contentGroup = new Group();
         this.add(contentGroup);
 
-        // Define clipping planes **relative to geometry bounds**
         const clipLeft = new Plane(new Vector3(1, 0, 0), width / 2); // right side
         const clipRight = new Plane(new Vector3(-1, 0, 0), width / 2); // left side
         const clipTop = new Plane(new Vector3(0, -1, 0), height / 2); // top
@@ -58,7 +57,6 @@ export class CarouselHelper extends Mesh {
 
         this.originalPlanes.push(clipLeft, clipRight, clipTop, clipBottom);
 
-        // Create local clipping planes
         for (let i = 0; i < this.originalPlanes.length; i++) {
             const local = new Plane();
             const original = this.originalPlanes[i];
@@ -68,7 +66,6 @@ export class CarouselHelper extends Mesh {
             this.clippingPlanes.push(local);
         }
 
-        // Debug helpers
         if (debugClipping) {
             const helpers = [
                 new PlaneHelper(clipLeft, 1, 0xff0000),
@@ -82,7 +79,6 @@ export class CarouselHelper extends Mesh {
             }
         }
 
-        // Title text
         geometry.computeBoundingBox();
         const boundingBox = geometry.boundingBox;
         if (boundingBox) {
@@ -127,19 +123,6 @@ export class CarouselHelper extends Mesh {
             if (!clipped) return;
             clipped.copy(original).applyMatrix4(this.matrixWorld);
         }
-
-        // this.traverse((obj) => {
-        //     if (obj instanceof Mesh) {
-        //         const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
-        //         for (const mat of materials) {
-        //             if ("clippingPlanes" in mat) {
-        //                 mat.clippingPlanes = this.clippingPlanes;
-        //                 mat.clipIntersection = true;
-        //                 mat.needsUpdate = true;
-        //             }
-        //         }
-        //     }
-        // });
     }
 
     public followCamera(camera: Camera) {
