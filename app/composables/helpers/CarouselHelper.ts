@@ -7,48 +7,82 @@ import {
     Vector3,
     Group,
     MathUtils,
-    PlaneHelper
+    PlaneHelper,
+    Camera,
+    Matrix4,
+    MeshStandardMaterial,
 } from "three";
-import type { BoundingBox } from "../types/index";
 import { Text } from "troika-three-text";
+import type { BoundingBox } from "../types/index";
 
 export class CarouselHelper extends Mesh {
     private _minScroll = 0;
     private _maxScroll = 0;
 
     public readonly clippingPlanes: Plane[] = [];
-    private readonly originalPlanes = new Map<Plane, Plane>();
+    private readonly originalPlanes: Plane[] = [];
 
-    constructor({ title = "VR SHOP", debugClipping = false }: { title: string, debugClipping?: boolean }) {
-        const geometry = new PlaneGeometry(1, 0.5);
+    private _followTarget = new Vector3();
+    private _offset = new Vector3(0, 0, -1);
+    private _debugHelpers: PlaneHelper[] = [];
+
+    constructor({
+        title = "VR SHOP",
+        width = 1,
+        height = 0.5,
+        debugClipping = false,
+    }: {
+        title: string;
+        width?: number;
+        height?: number;
+        debugClipping?: boolean;
+    }) {
+        const geometry = new PlaneGeometry(width, height);
         const material = new MeshBasicMaterial({
             color: 0x000000,
             side: FrontSide,
             transparent: true,
-            opacity: 0.7
+            opacity: 0.7,
         });
 
         super(geometry, material);
-        this.add(new Group());
 
-        const clipLeft = new Plane(new Vector3(1, 0, 0), 0.4);
-        const clipRight = new Plane(new Vector3(-1, 0, 0), 0.4);
-        const clipTop = new Plane(new Vector3(0, -1, 0), 2);
-        const clipBottom = new Plane(new Vector3(0, 1, 0), -1.35);
+        const contentGroup = new Group();
+        this.add(contentGroup);
 
-        this.clippingPlanes.push(clipLeft, clipTop, clipRight, clipBottom);
+        // Define clipping planes **relative to geometry bounds**
+        const clipLeft = new Plane(new Vector3(1, 0, 0), width / 2); // right side
+        const clipRight = new Plane(new Vector3(-1, 0, 0), width / 2); // left side
+        const clipTop = new Plane(new Vector3(0, -1, 0), height / 2); // top
+        const clipBottom = new Plane(new Vector3(0, 1, 0), height / 2); // bottom
 
-        for (const plane of this.clippingPlanes) {
-            this.originalPlanes.set(plane, plane.clone());
+        this.originalPlanes.push(clipLeft, clipRight, clipTop, clipBottom);
+
+        // Create local clipping planes
+        for (let i = 0; i < this.originalPlanes.length; i++) {
+            const local = new Plane();
+            const original = this.originalPlanes[i];
+            if (!original) continue;
+
+            local.copy(original).applyMatrix4(this.matrix);
+            this.clippingPlanes.push(local);
         }
 
+        // Debug helpers
         if (debugClipping) {
-            this.add(new PlaneHelper(clipLeft, 5, 0xff0000));   
-            this.add(new PlaneHelper(clipRight, 5, 0x00ff00));  
-            this.add(new PlaneHelper(clipTop, 5, 0x0000ff));   
-            this.add(new PlaneHelper(clipBottom, 5, 0xffff00)); 
+            const helpers = [
+                new PlaneHelper(clipLeft, 1, 0xff0000),
+                new PlaneHelper(clipRight, 1, 0x00ff00),
+                new PlaneHelper(clipTop, 1, 0x0000ff),
+                new PlaneHelper(clipBottom, 1, 0xffff00),
+            ];
+            for (const h of helpers) {
+                this.add(h);
+                this._debugHelpers.push(h);
+            }
         }
 
+        // Title text
         geometry.computeBoundingBox();
         const boundingBox = geometry.boundingBox;
         if (boundingBox) {
@@ -56,39 +90,62 @@ export class CarouselHelper extends Mesh {
         }
     }
 
-    private _createTitle(title: string, boundingBox: BoundingBox) {
-        const content = new Text();
-        content.material.side = FrontSide;
-        content.fontSize = 0.03;
-        content.textAlign = "center";
-        content.overflowWrap = "break-word";
-        content.whiteSpace = "normal";
-        content.anchorX = "center";
-        content.anchorY = "top";
-        content.direction = "ltr";
-        content.maxWidth = 0.9;
-        content.color = 0xffffff;
-        content.text = title;
-        content.position.set(0, boundingBox.max.y * 0.9, 0.001);
-        content.sync();
-        this.add(content);
+    private _createTitle(title: string, bounds: BoundingBox) {
+        const text = new Text();
+        text.text = title;
+        text.fontSize = 0.03;
+        text.anchorX = "center";
+        text.anchorY = "top";
+        text.maxWidth = 0.9;
+        text.color = 0xffffff;
+        text.position.set(0, bounds.max.y * 0.9, 0.001);
+        text.sync();
+        this.add(text);
     }
 
     public SetScroll(min: number, max: number) {
-        this._maxScroll = max;
         this._minScroll = min;
+        this._maxScroll = max;
     }
 
     public Scroll(delta: number) {
-        this.children.forEach(child => {
-            if (child instanceof Group && child.isGroup) {
+        this.children.forEach((child) => {
+            if (child instanceof Group) {
                 const newX = child.position.x - delta;
                 child.position.x = MathUtils.clamp(newX, -this._maxScroll, this._minScroll);
             }
         });
     }
 
-    public getOriginalPlane(p: Plane): Plane | undefined {
-        return this.originalPlanes.get(p);
+    public updateClippingPlanes() {
+        this.updateMatrixWorld(true);
+        for (let i = 0; i < this.originalPlanes.length; i++) {
+            const original = this.originalPlanes[i];
+            if (!original) return;
+
+            const clipped = this.clippingPlanes[i];
+            if (!clipped) return;
+            clipped.copy(original).applyMatrix4(this.matrixWorld);
+        }
+
+        // this.traverse((obj) => {
+        //     if (obj instanceof Mesh) {
+        //         const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+        //         for (const mat of materials) {
+        //             if ("clippingPlanes" in mat) {
+        //                 mat.clippingPlanes = this.clippingPlanes;
+        //                 mat.clipIntersection = true;
+        //                 mat.needsUpdate = true;
+        //             }
+        //         }
+        //     }
+        // });
+    }
+
+    public followCamera(camera: Camera) {
+        this._followTarget.copy(this._offset).applyQuaternion(camera.quaternion).add(camera.position);
+        this.position.lerp(this._followTarget, 0.1);
+        this.lookAt(camera.position);
+        this.updateClippingPlanes();
     }
 }

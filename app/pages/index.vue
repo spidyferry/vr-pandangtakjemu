@@ -18,9 +18,6 @@ let register: Register;
 let WorldPosition: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
 let CardSpacing: number = .6;
 let carousel: CarouselHelper;
-let groupTextures: THREE.Texture[] = [];
-let groupScenes: THREE.Group[] = [];
-let currentPointIndex: number = 0;
 let keyboard: Keyboard;
 let usernameField: InputField;
 let passwordField: InputField
@@ -48,11 +45,10 @@ onMounted(() => {
 
 
     template.Camera.getWorldPosition(WorldPosition);
-    HandleKeyboard();
-    //HandleWorkers();
+    //HandleKeyboard();
+    HandleWorkers();
 
     HandleTeleports();
-    //HandleEnv();
 });
 
 const HandleTeleports = async () => {
@@ -154,94 +150,6 @@ const HandleKeyboard = () => {
     })
 }
 
-const HandleEnv = () => {
-    const marker = new THREE.Mesh(
-        new THREE.CircleGeometry(0.25, 32).rotateX(- Math.PI / 2),
-        new THREE.MeshBasicMaterial({ color: 0xbcbcbc })
-    );
-
-    const teleportConfigs = [
-        {
-            hdr: '/hdr/1.hdr',
-            points: [new THREE.Vector3(3, 0, 0)],
-            targetIndices: [1],
-        },
-        {
-            hdr: '/hdr/2.hdr',
-            points: [new THREE.Vector3(1, 0, -1.3), new THREE.Vector3(6, 0, 2.1)],
-            targetIndices: [0, 2],
-        },
-        {
-            hdr: '/hdr/3.hdr',
-            points: [new THREE.Vector3(3, 0, 1.5), new THREE.Vector3(3, 0, 2.25), new THREE.Vector3(3, 0, 3)],
-            targetHdrs: ['/hdr/4.hdr', '/hdr/6.hdr', '/hdr/5.hdr'],
-            targetIndices: [3, 5, 4],
-        },
-    ];
-
-    const hdrPaths = [
-        '/hdr/1.hdr',
-        '/hdr/2.hdr',
-        '/hdr/3.hdr',
-        '/hdr/4.hdr',
-        '/hdr/5.hdr',
-        '/hdr/6.hdr',
-    ];
-
-    const initialHDR = hdrPaths[0];
-    if (initialHDR) {
-        new RGBELoader(template?.LoadingManager).load(initialHDR, (texture) => {
-            texture.mapping = THREE.EquirectangularReflectionMapping;
-            texture.name = '0';
-            groupTextures[0] = texture;
-
-            if (template && template.Scene) {
-                template.Scene.environment = texture;
-                template.Scene.background = texture;
-                template.Scene.environmentIntensity = 1.0;
-            }
-        });
-    }
-
-    hdrPaths.slice(1).forEach((path, i) => {
-        new RGBELoader(template?.LoadingManager).load(path, (texture) => {
-            texture.mapping = THREE.EquirectangularReflectionMapping;
-            texture.name = (i + 1).toString();
-            groupTextures[i + 1] = texture;
-        });
-    });
-
-    teleportConfigs.forEach((config, groupIndex) => {
-        const group = new THREE.Group();
-        group.name = `group ${groupIndex + 1}`;
-        group.userData.index = groupIndex;
-        group.userData.points = [];
-
-        config.points.forEach((point, pointIndex) => {
-            const circle = new THREE.Mesh(
-                new THREE.CircleGeometry(0.25, 32).rotateX(-Math.PI / 2),
-                new THREE.MeshStandardMaterial({ color: 0xbcbcbc })
-            );
-            circle.name = `circle ${pointIndex}`
-            circle.position.copy(point);
-
-            const targetIndex = config.targetIndices?.[pointIndex] ?? groupIndex;
-            const targetHdr = config.targetHdrs?.[pointIndex] ?? hdrPaths[targetIndex];
-
-
-            circle.userData.hdr = targetHdr ?? hdrPaths[targetIndex ?? groupIndex];
-            circle.userData.targetIndex = targetIndex ?? groupIndex;
-
-            group.userData.points.push(circle);
-            group.add(circle);
-        });
-
-        group.visible = groupIndex === currentPointIndex;
-        groupScenes.push(group);
-        template?.Scene.add(group);
-    });
-};
-
 const Workers = () => {
     const post = (url: string, payload: Record<string, any>) => {
         template?.LoadingManager?.itemStart(url);
@@ -303,19 +211,15 @@ const HandleWorkers = async () => {
     };
 
     const worker = Workers();
-    const data = await worker.get('https://market.pandangtakjemu.com/jellyfish/get/product/http', payload);
+    const data = await worker.get('https://fakestoreapi.com/products', payload);
 
     HandleContent(data);
 
 }
 
 const HandleContent = async (data: any) => {
-    carousel = new CarouselHelper({ title: 'Wildy Shop' });
+    carousel = new CarouselHelper({ title: 'Pandang Tak Jemu Shop', debugClipping: false });
     carousel.position.set(WorldPosition.x, WorldPosition.y, -.5);
-    if (template?.Renderer) {
-        template.Renderer.clippingPlanes = carousel.clippingPlanes;
-    }
-
     template?.Scene.add(carousel);
 
     const length = data.length;
@@ -354,7 +258,7 @@ const HandleContent = async (data: any) => {
         image.position.set(rawBoundingBox.max.x * 0.7, 0, 0.001);
         card.add(image);
 
-        const title = handleTitle(item.name, rawBoundingBox, width);
+        const title = handleTitle(item.name ?? item.title, rawBoundingBox, width);
         card.add(title);
 
         const buyButton = handleButtonBuy(width, height);
@@ -378,7 +282,6 @@ const HandleContent = async (data: any) => {
             }
         })
     }
-
     register.addFeatures({ requiredFeatures: ['carousel'], data: { carousel: { mesh: carousel }, controllers: template?.Controllers, renderer: template?.Renderer } })
 }
 
@@ -387,11 +290,10 @@ const handleCard = (width: number, height: number) => {
     const geometry = new THREE.PlaneGeometry(width, height);
     const material = new THREE.MeshBasicMaterial({
         color: 0xffffff,
-        clippingPlanes: carousel.clippingPlanes,
         clipShadows: true,
-        alphaToCoverage: true
+        alphaToCoverage: true,
+        clippingPlanes: carousel.clippingPlanes
     })
-    applyLocalClipping(material);
     const card = new THREE.Mesh(geometry, material);
 
     return card;
@@ -414,11 +316,10 @@ const handleImage = async (image: string, width: number, height: number) => {
     const material = new THREE.MeshBasicMaterial({
         map: texture,
         transparent: true,
-        clippingPlanes: carousel.clippingPlanes,
         clipShadows: true,
-        alphaToCoverage: true
+        alphaToCoverage: true,
+        clippingPlanes: carousel.clippingPlanes
     });
-    applyLocalClipping(material);
     const mesh = new THREE.Mesh(geometry, material);
     mesh.name = 'image';
     imageWidth > 0.3 ? mesh.scale.set(0.3, 0.3, 0.3) : mesh.scale.set(0.5, 0.5, 0.5);
@@ -443,7 +344,6 @@ const handleTitle = (title: string, boundingBox: BoundingBox, width: number) => 
     content.position.set(0, boundingBox.max.y * 0.95, 0.001);
     content.name = `title ${title}`;
     content.material.clippingPlanes = carousel.clippingPlanes;
-    applyLocalClipping(content.material);
     content.sync();
 
     return content;
@@ -453,12 +353,11 @@ const handleButtonBuy = (width: number, height: number) => {
     const geometry = new THREE.PlaneGeometry(width / 4, height / 8);
     const material = new THREE.MeshBasicMaterial({
         color: 0x228B22,
-        clippingPlanes: carousel.clippingPlanes,
         clipShadows: true,
-        alphaToCoverage: true
+        alphaToCoverage: true,
+        clippingPlanes: carousel.clippingPlanes
     })
     const buttonMesh = new THREE.Mesh(geometry, material) as ClickableMesh;
-    applyLocalClipping(material);
     buttonMesh.name = `button buy`;
 
     const text = new Text();
@@ -476,7 +375,6 @@ const handleButtonBuy = (width: number, height: number) => {
     text.text = 'ADD TO CART';
     text.position.set(0, 0, 0.001);
     text.material.clippingPlanes = carousel.clippingPlanes;
-    applyLocalClipping(text.material);
     text.sync();
 
     buttonMesh.add(text);
@@ -503,11 +401,10 @@ const handlePrice = (price: number, boundingBox: BoundingBox) => {
     content.maxWidth = 0.9;
     content.color = 0x333333;
     content.text = `Price :\n $${price}`;
-    content.material.clippingPlanes = carousel.clippingPlanes;
     content.material.clipShadows = true;
     content.material.alphaToCoverage = true;
     content.position.set(boundingBox.min.x * .9, 0, 0.001);
-    applyLocalClipping(content.material);
+    content.material.clippingPlanes = carousel.clippingPlanes;
     content.sync();
     return content;
 }
@@ -541,11 +438,10 @@ const handleRate = (rating: Rating, boundingBox: BoundingBox) => {
     content.anchorX = 'left';
     content.anchorY = 'top';
     content.direction = 'ltr';
-    content.material.clippingPlanes = carousel.clippingPlanes;
     content.material.clipShadows = true;
     content.material.alphaToCoverage = true;
     content.position.set(boundingBox.min.x * .65, 0, 0.001);
-    applyLocalClipping(content.material);
+    content.material.clippingPlanes = carousel.clippingPlanes;
     content.sync();
     return content;
 }
@@ -571,19 +467,17 @@ const handleCount = (data: any, boundingBox: BoundingBox) => {
     Quantity.position.set(boundingBox.min.x * .3, 0, 0.001);
     Quantity.material.clippingPlanes = carousel.clippingPlanes;
     group.add(Quantity);
-    applyLocalClipping(Quantity.material);
 
     Quantity.sync();
     const minusMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(0.012, 0.012),
         new THREE.MeshBasicMaterial({
             color: 0x228B22,
-            clippingPlanes: carousel.clippingPlanes,
             clipShadows: true,
-            alphaToCoverage: true
+            alphaToCoverage: true,
+            clippingPlanes: carousel.clippingPlanes
         })
     ) as ClickableMesh;
-    applyLocalClipping(minusMesh.material);
 
     const minusText = new Text();
     minusText.material.side = THREE.FrontSide;
@@ -603,19 +497,17 @@ const handleCount = (data: any, boundingBox: BoundingBox) => {
     minusMesh.position.set(boundingBox.min.x * .3, -0.024, 0.001);
     minusMesh.add(minusText);
     group.add(minusMesh);
-    applyLocalClipping(minusText.material);
     minusText.sync();
 
     const plusMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(0.012, 0.012),
         new THREE.MeshBasicMaterial({
             color: 0x228B22,
-            clippingPlanes: carousel.clippingPlanes,
             clipShadows: true,
-            alphaToCoverage: true
+            alphaToCoverage: true,
+            clippingPlanes: carousel.clippingPlanes
         })
     ) as ClickableMesh;
-    applyLocalClipping(plusMesh.material);
 
     const plusText = new Text();
     plusText.material.side = THREE.FrontSide;
@@ -630,12 +522,12 @@ const handleCount = (data: any, boundingBox: BoundingBox) => {
     plusText.maxWidth = 0.012 * 0.9;
     plusText.color = 0xffffff;
     plusText.text = '+';
-    plusText.position.set(0, 0.0015, 0.001);
     plusText.material.clippingPlanes = carousel.clippingPlanes;
+    plusText.position.set(0, 0.0015, 0.001);
     plusMesh.position.set(-.015, -0.024, 0.001);
+
     plusMesh.add(plusText);
     group.add(plusMesh);
-    applyLocalClipping(plusText.material);
     plusText.sync();
 
     minusMesh.name = 'button decrement';
@@ -713,21 +605,6 @@ const handleCount = (data: any, boundingBox: BoundingBox) => {
     return group;
 }
 
-const applyLocalClipping = (material: THREE.Material | THREE.Material[]) => {
-    const apply = (mat: THREE.Material) => {
-        mat.clippingPlanes = carousel.clippingPlanes;
-        mat.clipShadows = true;
-        mat.alphaToCoverage = true;
-        mat.needsUpdate = true;
-    };
-
-    if (Array.isArray(material)) {
-        material.forEach(apply);
-    } else {
-        apply(material);
-    }
-};
-
 
 const animate = () => {
     if (register) {
@@ -735,6 +612,11 @@ const animate = () => {
         const elapsed = template?.Clock?.elapsedTime ?? 0;
         register.update(delta, elapsed);
     }
+
+    if (carousel && template?.Camera) {
+        carousel.followCamera(template?.Camera); 
+    }
+
     template?.render();
 }
 </script>

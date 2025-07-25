@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "pandang-tak-jemu",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,7 +13,6 @@
     "ecsy": "^0.4.3",
     "nuxt": "^4.0.1",
     "three": "^0.178.0",
-    "troika-3d-text": "^0.52.4",
     "troika-three-text": "^0.52.4",
     "vue": "^3.5.17",
     "vue-router": "^4.5.1"

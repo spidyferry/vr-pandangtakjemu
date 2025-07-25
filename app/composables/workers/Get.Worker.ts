@@ -30,7 +30,6 @@ self.onmessage = async function (e: MessageEvent<WorkerRequest>) {
 
         const contentType = response.headers.get('Content-Type') || '';
         const raw = await response.text();
-        console.log("products: ", raw);
         let parsed: any;
         try {
             if (contentType.includes('application/json')) {
