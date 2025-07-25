@@ -21,7 +21,9 @@ self.onmessage = async function (e: MessageEvent<WorkerRequest>) {
             method: 'POST',
             body: JSON.stringify(payload),
         });
-        console.log(response)
+        console.log(response);
+        const raw = await response.text();
+        console.log(raw);
         // const contentType = response.headers.get('Content-Type') || '';
 
         // let parsed: any;
