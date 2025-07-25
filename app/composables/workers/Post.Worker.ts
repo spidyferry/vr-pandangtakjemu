@@ -20,7 +20,6 @@ self.onmessage = async function (e: MessageEvent<WorkerRequest>) {
         const response = await fetch(url, {
             method: 'POST',
             body: JSON.stringify(payload),
-            credentials: 'include'
         });
         console.log(response)
         // const contentType = response.headers.get('Content-Type') || '';
