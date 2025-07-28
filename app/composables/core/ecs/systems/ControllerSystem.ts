@@ -47,36 +47,6 @@ export class ControllerSystem extends System {
                 const intersection = intersections[0];
                 const gamepad = source.gamepad;
 
-                gamepad?.buttons.forEach((b: GamepadButton, i: number) => {
-                    const side = controller.userData.handedness as 'left' | 'right';
-
-                    if (side !== 'left') return;
-                    if (!this.previousButtonStates[side]) this.previousButtonStates[side] = [];
-
-                    const wasPressed = this.previousButtonStates[side][i] || false;
-
-                    if (b.pressed && !wasPressed) {
-                        switch (i) {
-                            case 4: {
-                                if (controllerEntity.hasComponent(KeyboardComponent)) {
-                                    const component = controllerEntity.getMutableComponent(KeyboardComponent);
-                                    if (!component) return;
-
-                                    if (component.state !== 'show') component.state = 'show';
-                                }
-                            }
-                        }
-                    } else if (!b.pressed && wasPressed) {
-                        if (controllerEntity.hasComponent(KeyboardComponent)) {
-                            const component = controllerEntity.getMutableComponent(KeyboardComponent);
-                            if (!component) return;
-
-                            if (component.state === 'show') component.state = 'none';
-                        }
-                    }
-
-                    this.previousButtonStates[side][i] = b.pressed;
-                })
                 if (intersection) {
                     if (!controller.userData.isHover) {
                         controller.userData.isHover = true;
