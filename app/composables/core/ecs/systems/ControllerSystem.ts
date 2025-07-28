@@ -38,17 +38,45 @@ export class ControllerSystem extends System {
             session.inputSources.forEach((source: XRInputSource & { gamepad: Gamepad }) => {
                 const handedness = source.handedness;
 
-                // Ambil controller sesuai handedness
                 const controller = components.controllers.find(c => c.userData.handedness === handedness);
                 if (!controller) return;
 
                 this._handleJoystic(source, controller, controllerEntity, delta);
 
-                // Raycast hanya jika arah controller mendekati objek (opsional: pakai bounding box precheck)
                 const intersections = this._getIntersections(controller, object);
                 const intersection = intersections[0];
                 const gamepad = source.gamepad;
 
+                gamepad?.buttons.forEach((b: GamepadButton, i: number) => {
+                    const side = controller.userData.handedness as 'left' | 'right';
+
+                    if (side !== 'left') return;
+                    if (!this.previousButtonStates[side]) this.previousButtonStates[side] = [];
+
+                    const wasPressed = this.previousButtonStates[side][i] || false;
+
+                    if (b.pressed && !wasPressed) {
+                        switch (i) {
+                            case 4: {
+                                if (controllerEntity.hasComponent(KeyboardComponent)) {
+                                    const component = controllerEntity.getMutableComponent(KeyboardComponent);
+                                    if (!component) return;
+
+                                    if (component.state !== 'show') component.state = 'show';
+                                }
+                            }
+                        }
+                    } else if (!b.pressed && wasPressed) {
+                        if (controllerEntity.hasComponent(KeyboardComponent)) {
+                            const component = controllerEntity.getMutableComponent(KeyboardComponent);
+                            if (!component) return;
+
+                            if (component.state === 'show') component.state = 'none';
+                        }
+                    }
+
+                    this.previousButtonStates[side][i] = b.pressed;
+                })
                 if (intersection) {
                     if (!controller.userData.isHover) {
                         controller.userData.isHover = true;
@@ -60,9 +88,8 @@ export class ControllerSystem extends System {
                     this._onHover(source, controllerEntity, gamepad, intersection);
                     this._updateLine(controller, intersection);
 
-                    // Proses tombol hanya jika benar-benar ditekan
                     gamepad?.buttons.forEach((b: GamepadButton, i: number) => {
-                        if (handedness !== 'left' && handedness !== 'right') return; // skip "none"
+                        if (handedness !== 'left' && handedness !== 'right') return;
 
                         const prev = this.previousButtonStates[handedness]?.[i];
                         if (b.pressed || prev) {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as THREE from 'three';
-import { RGBELoader } from 'three/examples/jsm/Addons.js';
+import { LDrawConditionalLineMaterial, RGBELoader } from 'three/examples/jsm/Addons.js';
 import { Text } from 'troika-three-text';
 import { TeleportHelper } from '~/composables/helpers/TeleportHelper';
 import { CarouselHelper, InputField, Keyboard, Register, Template } from '~/composables/index';
@@ -26,13 +26,15 @@ let loginForm: THREE.Group;
 
 
 
-onMounted(() => {
+onMounted(async () => {
     if (!container.value) return;
 
     template = new Template.VR(container.value);
     template.Renderer.setAnimationLoop(animate);
-    template?.Camera.layers.enable(1);
-    template?.Camera.layers.disable(2);
+
+    template?.Camera.layers.set(0);
+    template?.Camera.layers.disableAll();
+    template?.Camera.layers.enable(0);
 
     register = new Register();
 
@@ -49,9 +51,12 @@ onMounted(() => {
 
 
     template.Camera.getWorldPosition(WorldPosition);
-    HandleTeleports();
-    HandleWorkers();
-    HandleKeyboard();
+
+    await Promise.all([
+        HandleKeyboard(),
+        HandleTeleports(),
+        HandleWorkers(),
+    ]);
 });
 
 const HandleTeleports = async () => {
@@ -131,23 +136,33 @@ const HandleTeleports = async () => {
 
 const HandleKeyboard = () => {
     loginForm = new THREE.Group();
-    loginForm.traverse(child => {
-        child.layers.set(1);
-    });
 
-    keyboard = new L3.Keyboard();
+    keyboard = new Keyboard();
     loginForm.add(keyboard);
 
-    usernameField = new L3.InputField({ label: 'Username' });
+    usernameField = new InputField({ label: 'Username' });
     usernameField.position.set(0, 0.25, -0.025);
     loginForm.add(usernameField);
 
-    passwordField = new L3.InputField({ label: 'Password' });
+    passwordField = new InputField({ label: 'Password' });
     passwordField.position.set(0, 0.25 / 2, -0.025);
     loginForm.add(passwordField);
 
-    template?.Scene.add(loginForm);
 
+    loginForm.traverse(child => {
+        child.layers.set(1);
+
+        if (child.userData.label === 'enter') {
+            child.userData.onClick = () => {
+                const inputValues = keyboard.inputValues;
+                template?.Scene.remove(loginForm);
+                template?.Camera.layers.disable(1);
+                template?.Camera.layers.enable(2);
+                return inputValues;
+            }
+        }
+    });
+    template?.Scene.add(loginForm);
 
     if (template?.Camera && keyboard && usernameField && passwordField) {
         register.addFeatures({
@@ -237,9 +252,7 @@ const HandleWorkers = async () => {
 const HandleContent = async (data: any) => {
     carousel = new CarouselHelper({ title: 'Pandang Tak Jemu Shop', debugClipping: false });
     carousel.position.set(WorldPosition.x, WorldPosition.y, -.5);
-    carousel.layers.set(2);
 
-    template?.Scene.add(carousel);
 
     const length = data.length;
     const lastIndex = data.length - 1;
@@ -266,7 +279,6 @@ const HandleContent = async (data: any) => {
 
 
         const card = handleCard(width, height);
-        card.layers.set(2);
         card.userData.itemId = item.id;
         card.position.set(i * CardSpacing, 0, 0.001);
 
@@ -275,31 +287,25 @@ const HandleContent = async (data: any) => {
         if (!rawBoundingBox) return;
 
         const image = await handleImage(item.image ?? item.link_image, width, height);
-        image.layers.set(2);
         image.position.set(rawBoundingBox.max.x * 0.7, 0, 0.001);
         card.add(image);
 
         const title = handleTitle(item.name ?? item.title, rawBoundingBox, width);
-        title.layers.set(2);
         card.add(title);
 
         const buyButton = handleButtonBuy(width, height);
-        buyButton.layers.set(2);
         buyButton.userData.itemId = item.id;
         buyButton.userData.item = item;
         buyButton.position.set(0, rawBoundingBox.min.y * 0.8, 0.001);
         card.add(buyButton);
 
         const price = handlePrice(item.price, rawBoundingBox);
-        price.layers.set(2);
         card.add(price);
 
         const rate = handleRate(item.rating, rawBoundingBox);
-        rate.layers.set(2);
         card.add(rate);
 
         const count = handleCount(item, rawBoundingBox);
-        count.layers.set(2);
         card.add(count);
 
         carousel.children.forEach(child => {
@@ -308,6 +314,11 @@ const HandleContent = async (data: any) => {
             }
         })
     }
+
+    carousel.traverse(child => {
+        child.layers.set(2);
+    });
+    template?.Scene.add(carousel);
     register.addFeatures({ requiredFeatures: ['carousel'], data: { carousel: { mesh: carousel }, controllers: template?.Controllers, renderer: template?.Renderer } })
 }
 

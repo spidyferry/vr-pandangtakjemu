@@ -28,7 +28,7 @@ export class KeyboardSystem extends System {
                             if (object.userData.label === 'enter') {
 
                                 if (typeof object.userData.onClick === 'function') {
-                                    const result = object.userData.onClick?.(component.camera, 1, 2);
+                                    const result = object.userData.onClick?.();
 
                                     if (result) {
                                         console.log(result);
@@ -73,6 +73,10 @@ export class KeyboardSystem extends System {
                         object.scale.set(1.2, 1.2, 1.2);
                     }
                     break;
+                }
+
+                case 'show': {
+
                 }
 
                 default: {

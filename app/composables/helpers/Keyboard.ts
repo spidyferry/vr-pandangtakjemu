@@ -165,15 +165,7 @@ export class Keyboard extends THREE.Mesh {
     mesh.userData = { canvas, ctx, texture, label };
 
     if (label === 'enter') {
-      if (!mesh.userData.onClick) {
-        mesh.userData.onClick = (camera: THREE.Camera, fromLayer: number, toLayer: number) => {
-          console.log(camera, fromLayer, toLayer)
-          camera.layers.disable(fromLayer);
-          camera.layers.enable(toLayer);
-
-          return this.inputValues
-        }
-      }
+      if (!mesh.userData.onClick) mesh.userData.onClick = () => { }
 
     }
     return mesh;
