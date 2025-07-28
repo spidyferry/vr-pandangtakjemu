@@ -12,12 +12,13 @@ export class InputField extends THREE.Group {
 
     constructor({ width = 0.25, height = 0.08, maxLength = 100, label = 'Name of Input' }: { width?: number, height?: number, maxLength?: number, label?: string } = {}) {
         super();
-
+        this.layers.set(1);
         this._maxLength = maxLength;
 
         const bgGeometry = new THREE.PlaneGeometry(width, height);
         const bgMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.5 });
         this._background = new THREE.Mesh(bgGeometry, bgMaterial);
+        this._background.layers.set(1);
         this.add(this._background);
 
         this._textMesh = new Text();
@@ -28,6 +29,7 @@ export class InputField extends THREE.Group {
         this._textMesh.anchorY = 'middle';
         this._textMesh.maxWidth = width * .9;
         this._textMesh.position.set(-width / 2 + 0.05, 0, 0.01);
+        this._textMesh.layers.set(1);
         this._textMesh.sync();
         this.add(this._textMesh);
 
@@ -38,6 +40,7 @@ export class InputField extends THREE.Group {
         this._title.anchorX = 'left';
         this._title.anchorY = 'middle';
         this._title.maxWidth = width * .9;
+        this._title.layers.set(1);
         this._title.position.set(-width / 2.5, 0.025, 0.01);
         this._title.sync();
         this.add(this._title);

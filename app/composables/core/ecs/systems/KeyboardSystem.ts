@@ -2,6 +2,7 @@ import { type Attributes, System } from 'ecsy';
 import { Object3DComponent } from '../components/Object3DComponent';
 import { KeyboardComponent } from '../components/KeyboardComponent';
 import { Keyboard } from '../../../helpers/Keyboard';
+import { Camera } from 'three';
 
 export class KeyboardSystem extends System {
     private worker?: Worker;
@@ -25,6 +26,20 @@ export class KeyboardSystem extends System {
                         if (object?.parent instanceof Keyboard) {
 
                             if (object.userData.label === 'enter') {
+
+                                if (typeof object.userData.onClick === 'function') {
+                                    const result = object.userData.onClick?.();
+
+                                    if (result) {
+                                        if (!(result.camera instanceof Camera)) return;
+                                        const payload = result.inputValues;
+                                        result.camera.layers.enable(result.layers.carousel);
+                                        result.camera.layers.disable(result.layers.keyboard);
+                                        console.log('inputValues:', payload);
+                                    }
+
+                                }
+
                                 const payload = {
                                     username: "admin",
                                     password: "123"

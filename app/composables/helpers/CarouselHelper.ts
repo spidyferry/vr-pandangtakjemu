@@ -96,6 +96,7 @@ export class CarouselHelper extends Mesh {
         text.color = 0xffffff;
         text.position.set(0, bounds.max.y * 0.9, 0.001);
         text.sync();
+        text.layers.set(2);
         this.add(text);
     }
 

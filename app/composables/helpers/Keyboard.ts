@@ -27,6 +27,8 @@ export class Keyboard extends THREE.Mesh {
     const material = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.7 });
     super(geometry, material);
 
+    this.layers.set(1);
+
     this.rotation.x = -Math.PI / 4;
     this._width = width;
     this._height = height;
@@ -165,6 +167,11 @@ export class Keyboard extends THREE.Mesh {
     const mesh = new THREE.Mesh(geometry, material);
 
     mesh.userData = { canvas, ctx, texture, label };
+
+    if (label === 'enter') {
+      if (!mesh.userData.onClick) mesh.userData.onClick = () => { }
+    }
+    mesh.layers.set(1);
     return mesh;
   }
 
