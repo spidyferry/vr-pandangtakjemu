@@ -624,14 +624,18 @@ const animate = () => {
 
     if (template?.Camera) {
         if (carousel) carousel.update(template.Camera);
+
         if (loginForm) {
-            template?.Camera.getWorldPosition(WorldPosition);
-            const offset = new THREE.Vector3(0, -.25 / 2, -.5);
-            offset.applyQuaternion(template?.Camera.quaternion);
-            loginForm.position.copy(WorldPosition).add(offset);
-            loginForm.quaternion.copy(template?.Camera.quaternion);
+            template.Camera.getWorldPosition(WorldPosition);
+            const offset = new THREE.Vector3(0, -0.125, -0.5);
+            offset.applyQuaternion(template.Camera.quaternion);
+            const targetPosition = WorldPosition.clone().add(offset);
+            loginForm.position.lerp(targetPosition, 0.1);
+            const targetQuaternion = template.Camera.quaternion.clone();
+            loginForm.quaternion.slerp(targetQuaternion, 0.1);
         }
     }
+
     template?.render();
 }
 </script>
