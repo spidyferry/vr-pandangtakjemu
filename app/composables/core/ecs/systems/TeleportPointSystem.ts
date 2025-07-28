@@ -11,10 +11,6 @@ export class TeleportPointSystem extends System {
 
             switch (component?.state) {
                 case 'teleport': {
-                    const group = object?.parent;
-                    const target = object?.userData.target;
-                    const texture = object?.userData.texture;
-
                     if (component.scene) {
                         if (object && object.userData.texture instanceof Texture) {
                             object.userData.texture.mapping = EquirectangularReflectionMapping;

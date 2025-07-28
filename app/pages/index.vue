@@ -47,10 +47,9 @@ onMounted(() => {
 
 
     template.Camera.getWorldPosition(WorldPosition);
-    HandleKeyboard();
-    HandleWorkers();
-
     HandleTeleports();
+    HandleWorkers();
+    HandleKeyboard();
 });
 
 const HandleTeleports = async () => {
@@ -113,7 +112,6 @@ const HandleTeleports = async () => {
     if (env && template?.Scene) {
         template.Scene.environment = env;
         template.Scene.background = env;
-        template.Scene.background.mapping = THREE.EquirectangularReflectionMapping
     }
 
     register.addFeatures({

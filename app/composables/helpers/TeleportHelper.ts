@@ -9,6 +9,7 @@ import {
     MeshBasicMaterial,
     MeshStandardMaterial,
     PlaneGeometry,
+    PMREMGenerator,
     Texture,
     Vector3,
     WebGLRenderer
@@ -40,16 +41,14 @@ type PointOptions = {
 type TeleportHelperOptions = DefaultOptions | PointOptions;
 
 export class TeleportHelper {
+    public groups: Group[] = [];
+    public hdrTextures: Record<number, Texture> = {};
+    public marker?: Mesh;
+    public floor?: Mesh;
+
     private _loadingManager?: LoadingManager;
     private _renderer?: WebGLRenderer;
-
-    public groups: Group[] = [];
-
-    public hdrTextures: Record<number, Texture> = {};
-
-    public marker?: Mesh;
-
-    public floor?: Mesh;
+    private _pmremGenerator?: PMREMGenerator;
 
     private constructor() { }
 
@@ -103,6 +102,11 @@ export class TeleportHelper {
     }) {
         if (!data?.env?.length || !this._loadingManager) return;
 
+        if (this._renderer) {
+            this._pmremGenerator = new PMREMGenerator(this._renderer);
+            this._pmremGenerator.compileEquirectangularShader()
+        }
+
         await Promise.all(
             data.env.map((path, index) =>
                 this._loadEnv(path).then(texture => {
@@ -143,22 +147,37 @@ export class TeleportHelper {
     private _loadEnv(path: string): Promise<Texture> {
         const isJPG = path.endsWith('.jpg') || path.endsWith('.jpeg') || path.endsWith('.png');
 
-        const loader = isJPG
-            ? new HDRJPGLoader(this._renderer)
-            : new RGBELoader(this._loadingManager);
-
         if (isJPG) {
             const loader = new HDRJPGLoader(this._renderer);
             return new Promise(async (resolve, reject) => {
-                const result = await loader.loadAsync(path);
-                const texture = result.renderTarget?.texture;
-                if (!texture) return;
+                try {
+                    const result = await loader.loadAsync(path);
+                    const texture = result.renderTarget?.texture;
 
-                result.dispose();
-                resolve(texture);
-            })
+                    if (!texture) {
+                        reject(new Error('HDRJPGLoader returned no texture'));
+                        return;
+                    }
+
+                    texture.mapping = EquirectangularReflectionMapping;
+                    texture.needsUpdate = true;
+
+                    const pmrem = this._pmremGenerator?.fromEquirectangular(texture);
+                    result.dispose();
+
+                    if (!pmrem) {
+                        reject(new Error('Failed to generate PMREM'));
+                        return;
+                    }
+
+                    resolve(texture);
+                } catch (err) {
+                    console.error(`Failed to load HDRJPG: ${path}`, err);
+                    reject(err);
+                }
+            });
         } else {
-            const loader = new RGBELoader();
+            const loader = new RGBELoader(this._loadingManager);
             return new Promise((resolve, reject) => {
                 loader.load(
                     path,
@@ -172,7 +191,8 @@ export class TeleportHelper {
                         reject(err);
                     }
                 );
-            })
+            });
         }
     }
+
 }
