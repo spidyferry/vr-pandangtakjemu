@@ -9,9 +9,10 @@ export class InputField extends THREE.Group {
     private _maxLength: number;
     private _isFocused = false;
 
+
     constructor({ width = 0.25, height = 0.08, maxLength = 100, label = 'Name of Input' }: { width?: number, height?: number, maxLength?: number, label?: string } = {}) {
         super();
-        
+
         this._maxLength = maxLength;
 
         const bgGeometry = new THREE.PlaneGeometry(width, height);

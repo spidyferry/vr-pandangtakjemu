@@ -22,7 +22,7 @@ export class CarouselHelper extends Mesh {
     public readonly clippingPlanes: Plane[] = [];
     private readonly originalPlanes: Plane[] = [];
 
-    private _followTarget = new Vector3();
+    private _target = new Vector3();
     private _offset = new Vector3(0, 0, -1);
     private _debugHelpers: PlaneHelper[] = [];
 
@@ -125,9 +125,9 @@ export class CarouselHelper extends Mesh {
         }
     }
 
-    public followCamera(camera: Camera) {
-        this._followTarget.copy(this._offset).applyQuaternion(camera.quaternion).add(camera.position);
-        this.position.lerp(this._followTarget, 0.1);
+    public update(camera: Camera) {
+        this._target.copy(this._offset).applyQuaternion(camera.quaternion).add(camera.position);
+        this.position.lerp(this._target, 0.1);
         this.lookAt(camera.position);
         this.updateClippingPlanes();
     }

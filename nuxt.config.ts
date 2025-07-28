@@ -33,6 +33,10 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
   ssr: false,
+  devServer: {
+    host: process.env.HOST || '127.0.0.1',
+    port: Number(process.env.PORT) || 3000,
+  }, 
   typescript: {
     typeCheck: true
   }

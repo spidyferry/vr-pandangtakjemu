@@ -6,12 +6,15 @@ export type Mode = 'abc' | 'symbols' | 'shift';
 export class Keyboard extends THREE.Mesh {
   mode: Mode = 'abc';
 
+  public inputValues: Record<string, string> = {};
+
   private _width: number;
   private _height: number;
   private _gap: number;
   private _activeInputField?: InputField;
-  public inputValues: Record<string, string> = {};
   private _keyActions: Record<string, () => void>;
+  private _target = new THREE.Vector3();
+  private _offset = new THREE.Vector3(0, 0, -1);
 
   private readonly _iconMap = {
     enter: '/images/enter.png',

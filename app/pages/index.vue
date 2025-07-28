@@ -21,6 +21,8 @@ let carousel: CarouselHelper;
 let keyboard: Keyboard;
 let usernameField: InputField;
 let passwordField: InputField
+let loginForm: THREE.Group;
+
 
 
 
@@ -61,11 +63,11 @@ const HandleTeleports = async () => {
         pointData: {
             env: [
                 '/hdr/1.jpg',
-                '/hdr/2.hdr',
-                '/hdr/3.hdr',
-                '/hdr/4.hdr',
-                '/hdr/5.hdr',
-                '/hdr/6.hdr'
+                '/hdr/2.jpg',
+                '/hdr/3.jpg',
+                '/hdr/4.jpg',
+                '/hdr/5.jpg',
+                '/hdr/6.jpg'
             ],
             config: [
                 {
@@ -128,17 +130,20 @@ const HandleTeleports = async () => {
 }
 
 const HandleKeyboard = () => {
+    loginForm = new THREE.Group();
+
     keyboard = new L3.Keyboard();
-    keyboard.position.set(WorldPosition.x, WorldPosition.y, -.4);
-    template?.Scene.add(keyboard);
+    loginForm.add(keyboard);
 
     usernameField = new L3.InputField({ label: 'Username' });
-    usernameField.position.set(WorldPosition.x, WorldPosition.y + .2, -.425)
-    template?.Scene.add(usernameField);
+    usernameField.position.set(0, 0.25, -0.025);
+    loginForm.add(usernameField);
 
     passwordField = new L3.InputField({ label: 'Password' });
-    passwordField.position.set(WorldPosition.x, WorldPosition.y + .1, -.425)
-    template?.Scene.add(passwordField);
+    passwordField.position.set(0, 0.25 / 2, -0.025);
+    loginForm.add(passwordField);
+
+    template?.Scene.add(loginForm);
 
     register.addFeatures({
         requiredFeatures: ['keyboard'],
@@ -224,7 +229,7 @@ const HandleWorkers = async () => {
 const HandleContent = async (data: any) => {
     carousel = new CarouselHelper({ title: 'Pandang Tak Jemu Shop', debugClipping: false });
     carousel.position.set(WorldPosition.x, WorldPosition.y, -.5);
-    template?.Scene.add(carousel);
+    //template?.Scene.add(carousel);
 
     const length = data.length;
     const lastIndex = data.length - 1;
@@ -617,10 +622,16 @@ const animate = () => {
         register.update(delta, elapsed);
     }
 
-    if (carousel && template?.Camera) {
-        carousel.followCamera(template?.Camera);
+    if (template?.Camera) {
+        if (carousel) carousel.update(template.Camera);
+        if (loginForm) {
+            template?.Camera.getWorldPosition(WorldPosition);
+            const offset = new THREE.Vector3(0, -.25 / 2, -.5);
+            offset.applyQuaternion(template?.Camera.quaternion);
+            loginForm.position.copy(WorldPosition).add(offset);
+            loginForm.quaternion.copy(template?.Camera.quaternion);
+        }
     }
-
     template?.render();
 }
 </script>
