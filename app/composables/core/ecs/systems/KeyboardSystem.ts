@@ -28,18 +28,15 @@ export class KeyboardSystem extends System {
                             if (object.userData.label === 'enter') {
 
                                 if (typeof object.userData.onClick === 'function') {
-                                    const result = object.userData.onClick?.();
+                                    const result = object.userData.onClick?.(component.camera, 1, 2);
 
                                     if (result) {
-                                        if (!(result.camera instanceof Camera)) return;
-                                        const payload = result.inputValues;
-                                        result.camera.layers.enable(result.layers.carousel);
-                                        result.camera.layers.disable(result.layers.keyboard);
-                                        console.log('inputValues:', payload);
+                                        console.log(result);
                                     }
 
                                 }
 
+                                /*
                                 const payload = {
                                     username: "admin",
                                     password: "123"
@@ -62,6 +59,7 @@ export class KeyboardSystem extends System {
                                         console.error('[KeyboardSystem] Worker error:', error);
                                     }
                                 };
+                                */
                             }
 
                             object.parent.handleKeyPress(object.userData.label);

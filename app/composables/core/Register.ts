@@ -83,6 +83,7 @@ export interface DataOptions {
             scene: THREE.Scene;
         },
         keyboard?: {
+            camera: THREE.Camera,
             mesh: Keyboard,
             inputField: InputField[]
         },
@@ -182,7 +183,7 @@ export class Register {
                                 world: this.world,
                             });
                             entity.addComponent(Object3DComponent, { object: child });
-                            entity.addComponent(KeyboardComponent, { keyboard: options.data?.keyboard?.mesh });
+                            entity.addComponent(KeyboardComponent, { keyboard: options.data?.keyboard?.mesh, camera: options.data?.keyboard?.camera });
                         }
                     });
 

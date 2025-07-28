@@ -131,7 +131,9 @@ const HandleTeleports = async () => {
 
 const HandleKeyboard = () => {
     loginForm = new THREE.Group();
-    loginForm.layers.set(1);
+    loginForm.traverse(child => {
+        child.layers.set(1);
+    });
 
     keyboard = new L3.Keyboard();
     loginForm.add(keyboard);
@@ -146,33 +148,22 @@ const HandleKeyboard = () => {
 
     template?.Scene.add(loginForm);
 
-    keyboard.children.forEach(child => {
-        if (child as THREE.Mesh) {
-            if (child.userData.label === 'enter') {
-                child.userData.onClick = () => {
-                    const camera = template?.Camera;
-                    const inputValues = keyboard.inputValues;
-                    const layers = {
-                        carousel: 2,
-                        keyboard: 1,
-                    }
-                    return { camera, inputValues, layers };
+
+    if (template?.Camera && keyboard && usernameField && passwordField) {
+        register.addFeatures({
+            requiredFeatures: ['keyboard'],
+            data: {
+                controllers: template.Controllers,
+                renderer: template.Renderer,
+                keyboard: {
+                    camera: template.Camera,
+                    mesh: keyboard,
+                    inputField: [usernameField, passwordField]
                 }
             }
-        }
-    });
+        });
+    }
 
-    register.addFeatures({
-        requiredFeatures: ['keyboard'],
-        data: {
-            controllers: template?.Controllers,
-            renderer: template?.Renderer,
-            keyboard: {
-                mesh: keyboard,
-                inputField: [usernameField, passwordField]
-            }
-        }
-    })
 }
 
 const Workers = () => {
@@ -237,7 +228,7 @@ const HandleWorkers = async () => {
 
     const worker = Workers();
     // https://market.pandangtakjemu.com/jellyfish/get/product/http
-    const data = await worker.get('https://market.pandangtakjemu.com/jellyfish/get/product/http', payload);
+    const data = await worker.get('https://fakestoreapi.com/products', payload);
 
     HandleContent(data);
 

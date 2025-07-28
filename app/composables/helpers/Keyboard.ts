@@ -13,8 +13,6 @@ export class Keyboard extends THREE.Mesh {
   private _gap: number;
   private _activeInputField?: InputField;
   private _keyActions: Record<string, () => void>;
-  private _target = new THREE.Vector3();
-  private _offset = new THREE.Vector3(0, 0, -1);
 
   private readonly _iconMap = {
     enter: '/images/enter.png',
@@ -26,8 +24,6 @@ export class Keyboard extends THREE.Mesh {
     const geometry = new THREE.PlaneGeometry(width + 0.02, height + 0.02);
     const material = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.7 });
     super(geometry, material);
-
-    this.layers.set(1);
 
     this.rotation.x = -Math.PI / 4;
     this._width = width;
@@ -169,9 +165,17 @@ export class Keyboard extends THREE.Mesh {
     mesh.userData = { canvas, ctx, texture, label };
 
     if (label === 'enter') {
-      if (!mesh.userData.onClick) mesh.userData.onClick = () => { }
+      if (!mesh.userData.onClick) {
+        mesh.userData.onClick = (camera: THREE.Camera, fromLayer: number, toLayer: number) => {
+          console.log(camera, fromLayer, toLayer)
+          camera.layers.disable(fromLayer);
+          camera.layers.enable(toLayer);
+
+          return this.inputValues
+        }
+      }
+
     }
-    mesh.layers.set(1);
     return mesh;
   }
 
