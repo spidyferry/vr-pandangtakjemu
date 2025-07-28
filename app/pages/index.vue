@@ -237,7 +237,7 @@ const HandleWorkers = async () => {
 
     const worker = Workers();
     // https://market.pandangtakjemu.com/jellyfish/get/product/http
-    const data = await worker.get('https://fakestoreapi.com/products', payload);
+    const data = await worker.get('https://market.pandangtakjemu.com/jellyfish/get/product/http', payload);
 
     HandleContent(data);
 
@@ -409,6 +409,7 @@ const handleButtonBuy = (width: number, height: number) => {
     text.color = 0xffffff;
     text.text = 'ADD TO CART';
     text.position.set(0, 0, 0.001);
+    text.layers.set(2);
     text.material.clippingPlanes = carousel.clippingPlanes;
     text.sync();
 
@@ -499,6 +500,7 @@ const handleCount = (data: any, boundingBox: BoundingBox) => {
     Quantity.direction = 'ltr';
     Quantity.color = 0x333333;
     Quantity.text = 'Quantity : \n 1';
+    Quantity.layers.set(2);
     Quantity.position.set(boundingBox.min.x * .3, 0, 0.001);
     Quantity.material.clippingPlanes = carousel.clippingPlanes;
     group.add(Quantity);
@@ -513,6 +515,7 @@ const handleCount = (data: any, boundingBox: BoundingBox) => {
             clippingPlanes: carousel.clippingPlanes
         })
     ) as ClickableMesh;
+    minusMesh.layers.set(2);
 
     const minusText = new Text();
     minusText.material.side = THREE.FrontSide;
@@ -528,6 +531,7 @@ const handleCount = (data: any, boundingBox: BoundingBox) => {
     minusText.color = 0xffffff;
     minusText.text = '-';
     minusText.position.set(0, 0.0015, 0.001);
+    minusText.layers.set(2);
     minusText.material.clippingPlanes = carousel.clippingPlanes;
     minusMesh.position.set(boundingBox.min.x * .3, -0.024, 0.001);
     minusMesh.add(minusText);
@@ -543,6 +547,7 @@ const handleCount = (data: any, boundingBox: BoundingBox) => {
             clippingPlanes: carousel.clippingPlanes
         })
     ) as ClickableMesh;
+    plusMesh.layers.set(2);
 
     const plusText = new Text();
     plusText.material.side = THREE.FrontSide;
@@ -557,6 +562,7 @@ const handleCount = (data: any, boundingBox: BoundingBox) => {
     plusText.maxWidth = 0.012 * 0.9;
     plusText.color = 0xffffff;
     plusText.text = '+';
+    plusText.layers.set(2);
     plusText.material.clippingPlanes = carousel.clippingPlanes;
     plusText.position.set(0, 0.0015, 0.001);
     plusMesh.position.set(-.015, -0.024, 0.001);
