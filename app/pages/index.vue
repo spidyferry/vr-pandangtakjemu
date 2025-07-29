@@ -155,7 +155,7 @@ const HandleKeyboard = () => {
             }
         }
     });
-    template?.Scene.add(loginForm);
+    //template?.Scene.add(loginForm);
 
     if (template?.Camera && keyboard && usernameField && passwordField) {
         register.addFeatures({
