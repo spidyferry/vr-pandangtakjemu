@@ -125,7 +125,7 @@ export class ControllerSystem extends System {
             if (!component) return;
             if (component.state !== 'hover') component.state = 'hover';
 
-            if (source.handedness === 'left' && gamepad && gamepad.axes.length >= 2) {
+            if (gamepad && gamepad.axes.length >= 2) {
                 if (!gamepad.axes[2]) return;
                 const horizontal = gamepad.axes[2] * .1;
 
