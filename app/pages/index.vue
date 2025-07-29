@@ -31,11 +31,6 @@ onMounted(async () => {
 
     template = new Template.VR(container.value);
     template.Renderer.setAnimationLoop(animate);
-
-    template?.Camera.layers.set(0);
-    template?.Camera.layers.disableAll();
-    template?.Camera.layers.enable(0);
-
     register = new Register();
 
     if (loadingContainer.value && progress.value && loadingText.value) {
@@ -150,14 +145,12 @@ const HandleKeyboard = () => {
 
 
     loginForm.traverse(child => {
-        child.layers.set(1);
-
         if (child.userData.label === 'enter') {
             child.userData.onClick = () => {
                 const inputValues = keyboard.inputValues;
+                const camera = template?.Renderer.xr.getCamera();
                 template?.Scene.remove(loginForm);
-                template?.Camera.layers.disable(1);
-                template?.Camera.layers.enable(2);
+                template?.Scene.add(carousel);
                 return inputValues;
             }
         }
@@ -315,10 +308,6 @@ const HandleContent = async (data: any) => {
         })
     }
 
-    carousel.traverse(child => {
-        child.layers.set(2);
-    });
-    template?.Scene.add(carousel);
     register.addFeatures({ requiredFeatures: ['carousel'], data: { carousel: { mesh: carousel }, controllers: template?.Controllers, renderer: template?.Renderer } })
 }
 
@@ -411,7 +400,6 @@ const handleButtonBuy = (width: number, height: number) => {
     text.color = 0xffffff;
     text.text = 'ADD TO CART';
     text.position.set(0, 0, 0.001);
-    text.layers.set(2);
     text.material.clippingPlanes = carousel.clippingPlanes;
     text.sync();
 
@@ -502,7 +490,6 @@ const handleCount = (data: any, boundingBox: BoundingBox) => {
     Quantity.direction = 'ltr';
     Quantity.color = 0x333333;
     Quantity.text = 'Quantity : \n 1';
-    Quantity.layers.set(2);
     Quantity.position.set(boundingBox.min.x * .3, 0, 0.001);
     Quantity.material.clippingPlanes = carousel.clippingPlanes;
     group.add(Quantity);
@@ -517,7 +504,6 @@ const handleCount = (data: any, boundingBox: BoundingBox) => {
             clippingPlanes: carousel.clippingPlanes
         })
     ) as ClickableMesh;
-    minusMesh.layers.set(2);
 
     const minusText = new Text();
     minusText.material.side = THREE.FrontSide;
@@ -533,7 +519,6 @@ const handleCount = (data: any, boundingBox: BoundingBox) => {
     minusText.color = 0xffffff;
     minusText.text = '-';
     minusText.position.set(0, 0.0015, 0.001);
-    minusText.layers.set(2);
     minusText.material.clippingPlanes = carousel.clippingPlanes;
     minusMesh.position.set(boundingBox.min.x * .3, -0.024, 0.001);
     minusMesh.add(minusText);
@@ -549,7 +534,6 @@ const handleCount = (data: any, boundingBox: BoundingBox) => {
             clippingPlanes: carousel.clippingPlanes
         })
     ) as ClickableMesh;
-    plusMesh.layers.set(2);
 
     const plusText = new Text();
     plusText.material.side = THREE.FrontSide;
@@ -564,7 +548,6 @@ const handleCount = (data: any, boundingBox: BoundingBox) => {
     plusText.maxWidth = 0.012 * 0.9;
     plusText.color = 0xffffff;
     plusText.text = '+';
-    plusText.layers.set(2);
     plusText.material.clippingPlanes = carousel.clippingPlanes;
     plusText.position.set(0, 0.0015, 0.001);
     plusMesh.position.set(-.015, -0.024, 0.001);
