@@ -23,6 +23,100 @@ export class ControllerSystem extends System {
         };
     }
 
+    /*
+    execute(delta: number, time: number): void {
+        const currentlyHovered = new Set<Entity>();
+
+        this.queries.controllers?.results.forEach(controllerEntity => {
+            const components = controllerEntity.getComponent(ControllerComponent);
+            const object = controllerEntity.getComponent(Object3DComponent)?.object;
+            if (!components || !object) return;
+
+            const session = components.renderer.xr.getSession();
+            if (!session) return;
+
+            session.inputSources.forEach((source: XRInputSource & { gamepad: Gamepad }) => {
+                const handedness = source.handedness;
+                const side = handedness as 'left' | 'right';
+                const controller = components.controllers.find(c => c.userData.handedness === handedness);
+                if (!controller) return;
+
+                this._handleJoystic(source, controller, controllerEntity, delta);
+
+                const intersections = this._getIntersections(controller, object);
+                const intersection = intersections[0];
+
+                const gamepad = source.gamepad;
+                if (!gamepad) return;
+
+                if (!this.previousButtonStates[side]) this.previousButtonStates[side] = [];
+
+                gamepad.buttons.forEach((b: GamepadButton, i: number) => {
+                    const wasPressed = this.previousButtonStates[side][i] || false;
+
+                    if (b.pressed && !wasPressed) {
+                        if (controller.userData.handedness === source.handedness) {
+                            console.log(controller.userData.handedness)
+                            switch (i) {
+                                case 0: {
+                                    if (!intersection) return;
+                                    this._handleButton(b, i, controller, controllerEntity, intersection, gamepad, components.renderer);
+                                    break;
+                                }
+
+                                case 4: {
+                                    if (controllerEntity.hasComponent(KeyboardComponent)) {
+                                        const component = controllerEntity.getMutableComponent(KeyboardComponent);
+                                        const parent = component?.keyboard?.parent;
+                                        if (parent) {
+                                            component.state = parent.visible ? 'hide' : 'show';
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+
+                    }
+
+                    this.previousButtonStates[side][i] = b.pressed;
+                });
+
+                if (intersection) {
+                    if (!controller.userData.isHover) {
+                        controller.userData.isHover = true;
+                        controller.userData.lineReset = false;
+                    }
+
+                    currentlyHovered.add(controllerEntity);
+
+                    this._onHover(source, controllerEntity, gamepad, intersection);
+                    this._updateLine(controller, intersection);
+                } else {
+                    if (!controller.userData.lineReset) {
+                        this._resetLine(controller);
+                        controller.userData.lineReset = true;
+                        controller.userData.isHover = false;
+                    }
+                }
+            });
+        });
+
+        this.queries.interactables?.results.forEach(entity => {
+            if (
+                (entity.hasComponent(ButtonComponent) ||
+                    entity.hasComponent(KeyboardComponent) ||
+                    entity.hasComponent(CarouselComponent) ||
+                    entity.hasComponent(TeleportPointComponent)) &&
+                !currentlyHovered.has(entity)
+            ) {
+                this._onUnhover(entity);
+            }
+        });
+    }
+    */
+
+
     execute(delta: number, time: number): void {
         const currentlyHovered = new Set<Entity>();
 
@@ -48,6 +142,7 @@ export class ControllerSystem extends System {
                 const gamepad = source.gamepad;
 
                 if (intersection) {
+                    console.log(intersection.object)
                     if (!controller.userData.isHover) {
                         controller.userData.isHover = true;
                         controller.userData.lineReset = false;
@@ -92,10 +187,8 @@ export class ControllerSystem extends System {
 
     }
 
-
-
-
     private _onHover(source: XRInputSource, entity: Entity, gamepad: Gamepad, intersection: THREE.Intersection) {
+
         if (entity.hasComponent(ButtonComponent)) {
             const component = entity.getMutableComponent(ButtonComponent);
             if (!component) return;
@@ -286,6 +379,7 @@ export class ControllerSystem extends System {
 
 
     private _StartAction(index: number, controller: THREE.Group, entity: Entity, intersection: THREE.Intersection, renderer: THREE.WebGLRenderer) {
+        console.log(index)
         switch (index) {
             case 0:
                 this._updateColor(controller, 0x22d3ee);
@@ -295,6 +389,19 @@ export class ControllerSystem extends System {
                 this._updateColor(controller, 0x22d3ee);
                 this._handleSnap(controller, entity);
                 break;
+
+            case 4:
+                this._updateColor(controller, 0x22d3ee);
+                this._handleClose(controller, entity);
+        }
+    }
+
+    private _handleClose(controller: THREE.Group, entity: Entity) {
+        if (entity.hasComponent(KeyboardComponent)) {
+            const component = entity.getMutableComponent(KeyboardComponent);
+            if (!component) return;
+            console.log(component.keyboard);
+
         }
     }
 
@@ -439,8 +546,8 @@ export class ControllerSystem extends System {
     private _getIntersections(controller: THREE.Group, object: THREE.Mesh) {
         const tempMatrix = new THREE.Matrix4();
         const raycaster = new THREE.Raycaster();
-        raycaster.layers.enable(1);
-        raycaster.layers.enable(2)
+        // raycaster.layers.enable(1);
+        // raycaster.layers.enable(2)
         tempMatrix.identity().extractRotation(controller.matrixWorld);
         raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
         raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);

@@ -85,7 +85,8 @@ export interface DataOptions {
         keyboard?: {
             camera: THREE.Camera,
             mesh: Keyboard,
-            inputField: InputField[]
+            inputField: InputField[],
+            afterLoggedIn: any;
         },
         carousel?: {
             mesh: CarouselHelper
@@ -183,7 +184,9 @@ export class Register {
                                 world: this.world,
                             });
                             entity.addComponent(Object3DComponent, { object: child });
+
                             entity.addComponent(KeyboardComponent, { keyboard: options.data?.keyboard?.mesh, camera: options.data?.keyboard?.camera });
+                            entity.addComponent(CarouselComponent, { carousel: options.data?.keyboard?.afterLoggedIn });
                         }
                     });
 
@@ -281,7 +284,7 @@ export class Register {
                         world: this.world
                     });
                     entity.addComponent(Object3DComponent, { object: data?.carousel?.mesh });
-                    entity.addComponent(CarouselComponent);
+                    entity.addComponent(CarouselComponent, { carousel: data?.carousel?.mesh });
                     break;
                 }
 

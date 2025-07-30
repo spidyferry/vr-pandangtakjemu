@@ -3,14 +3,18 @@ import {
     CircleGeometry,
     DoubleSide,
     EquirectangularReflectionMapping,
+    Euler,
     Group,
     LoadingManager,
+    MathUtils,
     Mesh,
     MeshBasicMaterial,
     MeshStandardMaterial,
     PlaneGeometry,
     PMREMGenerator,
+    Quaternion,
     Texture,
+    TextureLoader,
     Vector3,
     WebGLRenderer
 } from "three";
@@ -34,6 +38,7 @@ type PointOptions = {
         config: {
             points: Vector3[];
             target: number[];
+            rotation: Vector3[];
         }[];
     };
 };
@@ -96,6 +101,7 @@ export class TeleportHelper {
     private async _createPointBased(data?: {
         env: string[];
         config: {
+            rotation: Vector3[];
             points: Vector3[];
             target: number[];
         }[];
@@ -121,15 +127,29 @@ export class TeleportHelper {
             group.name = `TeleportGroup_${groupIndex}`;
 
             config.points.forEach((point, pointIndex) => {
+                const textureLoader = new TextureLoader(this._loadingManager);
+                const texture = textureLoader.load('/images/Arrow.png');
+
                 const material = new MeshStandardMaterial({
                     color: 0xd6d4d4,
-                    side: DoubleSide
+                    side: DoubleSide,
+                    map: texture
                 });
 
                 const geometry = new CircleGeometry(0.25, 32).rotateX(-Math.PI / 2);
                 const circle = new Mesh(geometry, material);
                 circle.position.copy(point);
 
+                const rotation = config.rotation?.[pointIndex];
+                if (rotation instanceof Vector3) {
+                    const euler = new Euler(
+                        MathUtils.degToRad(rotation.x),
+                        MathUtils.degToRad(rotation.y),
+                        MathUtils.degToRad(rotation.z)
+                    );
+                    circle.rotation.copy(euler);
+                }
+                
                 const targetIndex = config.target[pointIndex];
                 if (typeof targetIndex === 'number') {
                     circle.userData.texture = this.hdrTextures[targetIndex];

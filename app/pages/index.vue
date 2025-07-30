@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { LDrawConditionalLineMaterial, RGBELoader } from 'three/examples/jsm/Addons.js';
 import { Text } from 'troika-three-text';
 import { TeleportHelper } from '~/composables/helpers/TeleportHelper';
-import { CarouselHelper, InputField, Keyboard, Register, Template } from '~/composables/index';
+import { CarouselHelper, InputField, Keyboard, LoadingHelper, Register, Template } from '~/composables/index';
 import type { BoundingBox } from '~/composables/types/BoundingBox.type';
 import type { ClickableMesh } from '~/composables/types/ClickableMesh.type';
 import type { Rating } from '~/composables/types/Rating.type';
@@ -22,9 +22,7 @@ let keyboard: Keyboard;
 let usernameField: InputField;
 let passwordField: InputField
 let loginForm: THREE.Group;
-
-
-
+let loadingHelper: LoadingHelper | null = null;
 
 onMounted(async () => {
     if (!container.value) return;
@@ -33,26 +31,91 @@ onMounted(async () => {
     template.Renderer.setAnimationLoop(animate);
     register = new Register();
 
+    const backsound = template.setAudio('/sounds/sounds-effect-nature.mp3');
+
+    template.Renderer.xr.addEventListener('sessionstart', () => {
+        backsound.play();
+    })
+
     if (loadingContainer.value && progress.value && loadingText.value) {
-        const loadingHelper = new LoadingHelper(
-            {
-                loadingManager: template.LoadingManager,
-                loadingContainer: loadingContainer.value,
-                progressHtml: progress.value,
-                textHtml: loadingText.value,
-            }
+        setupLoadingUI(
+            template.LoadingManager,
+            loadingContainer.value,
+            progress.value,
+            loadingText.value
         );
     }
 
+    getActiveCamera()?.getWorldPosition(WorldPosition);
 
-    template.Camera.getWorldPosition(WorldPosition);
-
-    await Promise.all([
-        HandleKeyboard(),
-        HandleTeleports(),
-        HandleWorkers(),
-    ]);
+    await HandleTeleports();
 });
+
+
+const setupLoadingUI = (
+    loadingManager: THREE.LoadingManager,
+    loadingContainer: HTMLElement,
+    progressHtml: HTMLElement,
+    textHtml: HTMLElement
+) => {
+    loadingContainer.style.display = 'flex';
+    textHtml.innerHTML = 'Loading Assets...';
+
+    loadingManager.onStart = () => {
+        textHtml.innerHTML = 'Starting to load assets...';
+    };
+
+    loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+        const progressValue = itemsLoaded / itemsTotal;
+        console.log(progressValue, itemsTotal)
+        progressHtml.style.width = `${progressValue * 100}%`;
+
+        const safePath = (() => {
+            try {
+                return new URL(url).pathname;
+            } catch {
+                return url;
+            }
+        })();
+
+        const ext = safePath.split('.').pop()?.toLowerCase() || '';
+        const isHdr = safePath.includes('/hdr/') || ext === 'hdr';
+        const isImage = ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext);
+        const hasExt = /\.[a-z]{2,4}($|\?)/i.test(safePath);
+
+        if (isHdr) {
+            textHtml.innerHTML = 'Loading Environment...';
+        } else if (isImage) {
+            textHtml.innerHTML = 'Loading Image...';
+        } else if (!hasExt) {
+            if (safePath.includes('/products')) {
+                textHtml.innerHTML = 'Fetching Products...';
+            } else {
+                textHtml.innerHTML = 'Fetching Data...';
+            }
+        } else {
+            textHtml.innerHTML = `Loading: ${safePath}`;
+        }
+    };
+
+    loadingManager.onLoad = () => {
+        textHtml.innerHTML = 'Preparing your experience...';
+        setTimeout(() => {
+            loadingContainer.style.display = 'none';
+        }, 1500);
+    };
+
+    loadingManager.onError = (url) => {
+        textHtml.innerHTML = `Failed to load: ${url}`;
+    };
+}
+
+
+const getActiveCamera = () => {
+    const cam = template?.Renderer.xr.getCamera();
+    if (!cam) return;
+    return cam.isArrayCamera ? cam.cameras[0] : cam;
+}
 
 const HandleTeleports = async () => {
     if (!template?.Renderer) return;
@@ -72,35 +135,54 @@ const HandleTeleports = async () => {
             ],
             config: [
                 {
-                    points: [new THREE.Vector3(3, 0, 0)],
-                    target: [1]
+                    points: [
+                        new THREE.Vector3(3, 0, 0),
+                    ], // 3, 0, 0
+                    target: [2],
+                    rotation: [
+                        new THREE.Vector3(0, -90, 0),
+                    ]// -90
                 },
                 {
                     points: [
-                        new THREE.Vector3(-1.5, 0, -.8),
-                        new THREE.Vector3(2, 0, 1.2)
+                        new THREE.Vector3(-2, 0, -1.2), //mundur 
+                        new THREE.Vector3(2, 0, 1.2) // maju
                     ],
-                    target: [0, 2]
+                    target: [0, 2],
+                    rotation: [
+                        new THREE.Vector3(0, 60, 0),
+                        new THREE.Vector3(0, -120, 0)
+                    ]
                 },
                 {
                     points: [
-                        new THREE.Vector3(.5, 0, -1.5),
-                        new THREE.Vector3(-1.5, 0, 2.25),
-                        new THREE.Vector3(1, 0, 3)
+                        new THREE.Vector3(.5, 0, -1.5), // kiri
+                        new THREE.Vector3(-1.5, 0, 2.25), //tengah
+                        new THREE.Vector3(1, 0, 3), // kanan
+                        new THREE.Vector3(2, 0, -4) // mundur
                     ],
-                    target: [3, 5, 4]
+                    target: [3, 5, 4, 1],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, 90, 0),
+                        new THREE.Vector3(0, 180, 0),
+                        new THREE.Vector3(0, -45, 0)
+                    ]
                 },
                 {
-                    points: [],
-                    target: []
+                    points: [new THREE.Vector3(-.5, 0, 3)],
+                    target: [2],
+                    rotation: [new THREE.Vector3(0, 180, 0)]
                 },
                 {
-                    points: [],
-                    target: []
+                    points: [new THREE.Vector3(-2.5, 0, 1.5)],
+                    target: [2],
+                    rotation: [new THREE.Vector3(0, 60, 0)]
                 },
                 {
-                    points: [],
-                    target: []
+                    points: [new THREE.Vector3(-2.5, 0, -2)],
+                    target: [2],
+                    rotation: [new THREE.Vector3(0, 50, 0)]
                 },
             ]
         }
@@ -145,54 +227,38 @@ const HandleKeyboard = () => {
 
 
     loginForm.traverse(child => {
+        // child.layers.set(1);
         if (child.userData.label === 'enter') {
             child.userData.onClick = () => {
                 const inputValues = keyboard.inputValues;
-                const camera = template?.Renderer.xr.getCamera();
                 template?.Scene.remove(loginForm);
-                template?.Scene.add(carousel);
+                carousel.visible = true;
                 return inputValues;
             }
         }
     });
-    //template?.Scene.add(loginForm);
-
-    if (template?.Camera && keyboard && usernameField && passwordField) {
-        register.addFeatures({
-            requiredFeatures: ['keyboard'],
-            data: {
-                controllers: template.Controllers,
-                renderer: template.Renderer,
-                keyboard: {
-                    camera: template.Camera,
-                    mesh: keyboard,
-                    inputField: [usernameField, passwordField]
-                }
-            }
-        });
-    }
-
+    template?.Scene.add(loginForm);
 }
 
 const Workers = () => {
     const post = (url: string, payload: Record<string, any>) => {
-        template?.LoadingManager?.itemStart(url);
+        //template?.LoadingManager?.itemStart(url);
         return new Promise((resolve, reject) => {
             const worker = new Worker(new URL('../composables/workers/Post.Worker.ts', import.meta.url), { type: 'module' });
 
 
             worker.onmessage = (e) => {
                 if (e.data.success) {
-                    template?.LoadingManager?.itemEnd(url);
+                    //template?.LoadingManager?.itemEnd(url);
                     resolve(e.data.data);
                 } else {
-                    template?.LoadingManager?.itemError(url);
+                    //template?.LoadingManager?.itemError(url);
                     reject(new Error(e.data.error));
                 }
             };
 
             worker.onerror = (e) => {
-                template?.LoadingManager?.itemError(url);
+                //template?.LoadingManager?.itemError(url);
                 reject(new Error(`Worker error: ${e.message}`));
             };
 
@@ -201,22 +267,22 @@ const Workers = () => {
     };
 
     const get = (url: string, payload: Record<string, any>) => {
-        template?.LoadingManager?.itemStart(url);
+        //template?.LoadingManager?.itemStart(url);
         return new Promise((resolve, reject) => {
             const worker = new Worker(new URL('../composables/workers/Get.Worker.ts', import.meta.url), { type: 'module' });
 
             worker.onmessage = (e) => {
                 if (e.data.success) {
-                    template?.LoadingManager?.itemEnd(url);
+                    //template?.LoadingManager?.itemEnd(url);
                     resolve(e.data.data);
                 } else {
-                    template?.LoadingManager?.itemError(url);
+                    //template?.LoadingManager?.itemError(url);
                     reject(new Error(e.data.error));
                 }
             };
 
             worker.onerror = (e) => {
-                template?.LoadingManager?.itemError(url);
+                //template?.LoadingManager?.itemError(url);
                 reject(new Error(`Worker error: ${e.message}`));
             };
 
@@ -238,7 +304,7 @@ const HandleWorkers = async () => {
     // https://market.pandangtakjemu.com/jellyfish/get/product/http
     const data = await worker.get('https://fakestoreapi.com/products', payload);
 
-    HandleContent(data);
+    // HandleContent(data);
 
 }
 
@@ -308,7 +374,30 @@ const HandleContent = async (data: any) => {
         })
     }
 
-    register.addFeatures({ requiredFeatures: ['carousel'], data: { carousel: { mesh: carousel }, controllers: template?.Controllers, renderer: template?.Renderer } })
+    // carousel.traverse(child => {
+    //     child.layers.set(2);
+    // })
+    carousel.visible = false;
+    template?.Scene.add(carousel);
+
+    if (template?.Camera && keyboard && usernameField && passwordField) {
+        register.addFeatures(
+            {
+                requiredFeatures: ['carousel', 'keyboard'],
+                data:
+                {
+                    controllers: template?.Controllers,
+                    renderer: template?.Renderer,
+                    carousel: { mesh: carousel },
+                    keyboard: {
+                        camera: template?.Camera,
+                        mesh: keyboard,
+                        inputField: [usernameField, passwordField],
+                        afterLoggedIn: carousel
+                    }
+                }
+            })
+    }
 }
 
 const handleCard = (width: number, height: number) => {

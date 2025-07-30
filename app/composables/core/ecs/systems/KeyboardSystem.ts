@@ -2,7 +2,8 @@ import { type Attributes, System } from 'ecsy';
 import { Object3DComponent } from '../components/Object3DComponent';
 import { KeyboardComponent } from '../components/KeyboardComponent';
 import { Keyboard } from '../../../helpers/Keyboard';
-import { Camera } from 'three';
+import { Camera, Mesh } from 'three';
+import { CarouselComponent } from '../components/CarouselComponent';
 
 export class KeyboardSystem extends System {
     private worker?: Worker;
@@ -32,6 +33,14 @@ export class KeyboardSystem extends System {
 
                                     if (result) {
                                         console.log(result);
+
+                                        component.isLoggedIn = true;
+
+                                        this.queries.carousel?.results.forEach(entity => {
+                                            const component = entity.getMutableComponent(CarouselComponent);
+                                            if (!component) return;
+                                            component.isLoggedIn = true;
+                                        });
                                     }
 
                                 }
@@ -60,9 +69,10 @@ export class KeyboardSystem extends System {
                                     }
                                 };
                                 */
+                            } else {
+                                object.parent.handleKeyPress(object.userData.label);
                             }
 
-                            object.parent.handleKeyPress(object.userData.label);
                         }
                     }
                     break;
@@ -76,8 +86,45 @@ export class KeyboardSystem extends System {
                 }
 
                 case 'show': {
+                    const parent = component.keyboard?.parent;
+                    if (!parent) return;
 
+                    if (!parent.visible) {
+                        parent.visible = true;
+
+                        parent.traverse(child => {
+                            child.updateMatrixWorld(true);
+                            if ((child as Mesh).isMesh) {
+                                const mesh = child as Mesh;
+                                mesh.geometry?.computeBoundingBox();
+                                mesh.geometry?.computeBoundingSphere();
+                            }
+                        });
+                    }
+
+                    component.state = 'none';
+                    break;
                 }
+
+                case 'hide': {
+                    const parent = component.keyboard?.parent;
+                    if (!parent) return;
+
+                    parent.visible = false;
+
+                    parent.traverse(child => {
+                        child.updateMatrixWorld(true);
+                        if ((child as Mesh).isMesh) {
+                            const mesh = child as Mesh;
+                            mesh.geometry?.computeBoundingBox();
+                            mesh.geometry?.computeBoundingSphere();
+                        }
+                    });
+
+                    component.state = 'none';
+                    break;
+                }
+
 
                 default: {
                     if (object && object.scale.x !== 1) {
@@ -93,5 +140,9 @@ export class KeyboardSystem extends System {
 KeyboardSystem.queries = {
     keyboard: {
         components: [KeyboardComponent]
+    },
+
+    carousel: {
+        components: [CarouselComponent]
     }
 };

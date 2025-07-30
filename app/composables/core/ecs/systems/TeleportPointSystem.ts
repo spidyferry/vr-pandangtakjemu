@@ -13,6 +13,7 @@ export class TeleportPointSystem extends System {
                 case 'teleport': {
                     if (component.scene) {
                         if (object && object.userData.texture instanceof Texture) {
+                            console.log(object);
                             object.userData.texture.mapping = EquirectangularReflectionMapping;
                             component.scene.environment = object.userData.texture;
                             component.scene.background = object.userData.texture;

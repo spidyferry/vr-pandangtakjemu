@@ -64,6 +64,18 @@ export class CreateEngine implements IEngine {
     this._setupControllers();
 
     this.Scene.add(this.Player);
+
+    this.Renderer.xr.addEventListener('sessionstart', () => {
+      const camera = this.Renderer.xr.getCamera();
+
+      if (camera.isArrayCamera) {
+        for (const subCam of camera.cameras) {
+          subCam.layers.disableAll();
+          subCam.layers.enable(0);
+          subCam.layers.enable(1);
+        }
+      }
+    })
   }
 
   /**
@@ -102,6 +114,11 @@ export class CreateEngine implements IEngine {
 
     this.RightController = this.Renderer.xr.getController(0);
     this.LeftController = this.Renderer.xr.getController(1);
+
+    for (let i = 0; i < 30; i++) {
+      this.RightController.layers.enable(i);
+      this.LeftController.layers.enable(i);
+    }
 
     this.LeftController.userData = { handedness: 'left', isSelecting: false };
     this.RightController.userData = { handedness: 'right', isSelecting: false };
@@ -207,4 +224,57 @@ export class CreateEngine implements IEngine {
       onError?.(url);
     };
   }
+
+  public SetCameraLayers(layersToEnable: number[] = [0]): void {
+    const applyLayers = (camera: THREE.Camera) => {
+      camera.layers.disableAll();
+      for (const layer of layersToEnable) {
+        camera.layers.enable(layer);
+      }
+    };
+
+    const xrCamera = this.Renderer.xr.getCamera();
+    if ((xrCamera as any).isArrayCamera) {
+      for (const subCam of (xrCamera as THREE.ArrayCamera).cameras) {
+        applyLayers(subCam);
+      }
+    } else {
+      applyLayers(xrCamera);
+    }
+  }
+
+  /**
+ * Loads and sets a looping background audio.
+ * @param url - The URL of the audio file.
+ */
+  /**
+   * Loads and returns a background audio, ready to be controlled manually.
+   * @param url - The URL of the audio file.
+   * @returns The THREE.Audio instance (not yet playing).
+   */
+  public setAudio(url: string): THREE.Audio {
+    this.LoadingManager.itemStart(url); // Notify start to LoadingManager
+
+    const sound = new THREE.Audio(this.AudioListener);
+
+    this.AudioLoader.load(
+      url,
+      (buffer) => {
+        sound.setBuffer(buffer);
+        sound.setLoop(true);
+        sound.setVolume(0.25);
+        this.LoadingManager.itemEnd(url);
+      },
+      undefined,
+      (err) => {
+        this.LoadingManager.itemError(url);
+        console.error(`[Engine] Failed to load audio: ${url}`, err);
+      }
+    );
+
+    this.Camera.add(sound);
+
+    return sound;
+  }
+
 }

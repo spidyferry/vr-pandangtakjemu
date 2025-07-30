@@ -1,0 +1,98 @@
+[33mcommit 465e41cfa633ea0b0b4fb319718911617d38c5f8[m
+Author: wildy13 <wildy.simanjuntak13@gmail.com>
+Date:   Tue Jul 29 08:32:49 2025 +0700
+
+    updated
+
+[1mdiff --git a/app/pages/index.vue b/app/pages/index.vue[m
+[1mindex a39abaa..b58a7f9 100644[m
+[1m--- a/app/pages/index.vue[m
+[1m+++ b/app/pages/index.vue[m
+[36m@@ -31,11 +31,6 @@[m [monMounted(async () => {[m
+ [m
+     template = new Template.VR(container.value);[m
+     template.Renderer.setAnimationLoop(animate);[m
+[31m-[m
+[31m-    template?.Camera.layers.set(0);[m
+[31m-    template?.Camera.layers.disableAll();[m
+[31m-    template?.Camera.layers.enable(0);[m
+[31m-[m
+     register = new Register();[m
+ [m
+     if (loadingContainer.value && progress.value && loadingText.value) {[m
+[36m@@ -150,14 +145,12 @@[m [mconst HandleKeyboard = () => {[m
+ [m
+ [m
+     loginForm.traverse(child => {[m
+[31m-        child.layers.set(1);[m
+[31m-[m
+         if (child.userData.label === 'enter') {[m
+             child.userData.onClick = () => {[m
+                 const inputValues = keyboard.inputValues;[m
+[32m+[m[32m                const camera = template?.Renderer.xr.getCamera();[m
+                 template?.Scene.remove(loginForm);[m
+[31m-                template?.Camera.layers.disable(1);[m
+[31m-                template?.Camera.layers.enable(2);[m
+[32m+[m[32m                template?.Scene.add(carousel);[m
+                 return inputValues;[m
+             }[m
+         }[m
+[36m@@ -315,10 +308,6 @@[m [mconst HandleContent = async (data: any) => {[m
+         })[m
+     }[m
+ [m
+[31m-    carousel.traverse(child => {[m
+[31m-        child.layers.set(2);[m
+[31m-    });[m
+[31m-    template?.Scene.add(carousel);[m
+     register.addFeatures({ requiredFeatures: ['carousel'], data: { carousel: { mesh: carousel }, controllers: template?.Controllers, renderer: template?.Renderer } })[m
+ }[m
+ [m
+[36m@@ -411,7 +400,6 @@[m [mconst handleButtonBuy = (width: number, height: number) => {[m
+     text.color = 0xffffff;[m
+     text.text = 'ADD TO CART';[m
+     text.position.set(0, 0, 0.001);[m
+[31m-    text.layers.set(2);[m
+     text.material.clippingPlanes = carousel.clippingPlanes;[m
+     text.sync();[m
+ [m
+[36m@@ -502,7 +490,6 @@[m [mconst handleCount = (data: any, boundingBox: BoundingBox) => {[m
+     Quantity.direction = 'ltr';[m
+     Quantity.color = 0x333333;[m
+     Quantity.text = 'Quantity : \n 1';[m
+[31m-    Quantity.layers.set(2);[m
+     Quantity.position.set(boundingBox.min.x * .3, 0, 0.001);[m
+     Quantity.material.clippingPlanes = carousel.clippingPlanes;[m
+     group.add(Quantity);[m
+[36m@@ -517,7 +504,6 @@[m [mconst handleCount = (data: any, boundingBox: BoundingBox) => {[m
+             clippingPlanes: carousel.clippingPlanes[m
+         })[m
+     ) as ClickableMesh;[m
+[31m-    minusMesh.layers.set(2);[m
+ [m
+     const minusText = new Text();[m
+     minusText.material.side = THREE.FrontSide;[m
+[36m@@ -533,7 +519,6 @@[m [mconst handleCount = (data: any, boundingBox: BoundingBox) => {[m
+     minusText.color = 0xffffff;[m
+     minusText.text = '-';[m
+     minusText.position.set(0, 0.0015, 0.001);[m
+[31m-    minusText.layers.set(2);[m
+     minusText.material.clippingPlanes = carousel.clippingPlanes;[m
+     minusMesh.position.set(boundingBox.min.x * .3, -0.024, 0.001);[m
+     minusMesh.add(minusText);[m
+[36m@@ -549,7 +534,6 @@[m [mconst handleCount = (data: any, boundingBox: BoundingBox) => {[m
+             clippingPlanes: carousel.clippingPlanes[m
+         })[m
+     ) as ClickableMesh;[m
+[31m-    plusMesh.layers.set(2);[m
+ [m
+     const plusText = new Text();[m
+     plusText.material.side = THREE.FrontSide;[m
+[36m@@ -564,7 +548,6 @@[m [mconst handleCount = (data: any, boundingBox: BoundingBox) => {[m
+     plusText.maxWidth = 0.012 * 0.9;[m
+     plusText.color = 0xffffff;[m
+     plusText.text = '+';[m
+[31m-    plusText.layers.set(2);[m
+     plusText.material.clippingPlanes = carousel.clippingPlanes;[m
+     plusText.position.set(0, 0.0015, 0.001);[m
+     plusMesh.position.set(-.015, -0.024, 0.001);[m

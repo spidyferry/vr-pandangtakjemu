@@ -5,12 +5,13 @@ import type { Camera } from 'three';
 import type { Group } from 'three/examples/jsm/libs/tween.module.js';
 
 export class KeyboardComponent extends Component<KeyboardComponent> {
-    state: 'none' | 'pressed' | 'hover' | 'show' = 'none';
+    state: 'none' | 'pressed' | 'hover' | 'show' | 'hide' = 'none';
     wasPressed: boolean = false;
     inputField?: InputField;
     keyboard?: Keyboard;
     group?: Group;
-    camera?: Camera
+    camera?: Camera;
+    isLoggedIn: boolean = false;
 }
 
 KeyboardComponent.schema = {
@@ -19,4 +20,5 @@ KeyboardComponent.schema = {
     inputField: { type: Types.Ref, default: null },
     keyboard: { type: Types.Ref, default: null },
     camera: { type: Types.Ref, default: null },
+    isLoggedIn: { type: Types.Boolean, default: false },
 };

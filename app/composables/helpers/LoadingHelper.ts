@@ -27,6 +27,7 @@ export class LoadingHelper {
             this._doneResolver = resolve;
         });
 
+        console.log(this.loadingManager)
         this.loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
             this._loadingStart = performance.now();
             if (loadingContainer) loadingContainer.style.display = 'flex';
@@ -35,7 +36,7 @@ export class LoadingHelper {
 
         this.loadingManager.onProgress = (url: string, itemsLoaded: number, itemsTotal: number) => {
             this._progress = itemsLoaded / itemsTotal;
-
+            console.log(itemsTotal)
             if (progressHtml) {
                 progressHtml.style.width = `${this._progress * 100}%`;
             }
