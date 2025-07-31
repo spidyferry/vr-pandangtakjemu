@@ -67,7 +67,6 @@ const setupLoadingUI = (
 
     loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
         const progressValue = itemsLoaded / itemsTotal;
-        console.log(progressValue, itemsTotal)
         progressHtml.style.width = `${progressValue * 100}%`;
 
         const safePath = (() => {
@@ -138,7 +137,7 @@ const HandleTeleports = async () => {
                     points: [
                         new THREE.Vector3(3, 0, 0),
                     ], // 3, 0, 0
-                    target: [2],
+                    target: [1],
                     rotation: [
                         new THREE.Vector3(0, -90, 0),
                     ]// -90
