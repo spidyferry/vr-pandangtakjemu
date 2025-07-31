@@ -37,77 +37,21 @@ onMounted(async () => {
         backsound.play();
     })
 
-    if (loadingContainer.value && progress.value && loadingText.value) {
-        setupLoadingUI(
-            template.LoadingManager,
-            loadingContainer.value,
-            progress.value,
-            loadingText.value
-        );
+    if (loadingContainer.value && progress.value && loadingText.value && loadingContainer.value) {
+       loadingHelper = new LoadingHelper(
+        {
+            loadingContainer: loadingContainer.value,
+            loadingManager: template.LoadingManager,
+            progressHtml: progress.value,
+            textHtml: loadingText.value
+        }
+       );
     }
 
     getActiveCamera()?.getWorldPosition(WorldPosition);
 
     await HandleTeleports();
 });
-
-
-const setupLoadingUI = (
-    loadingManager: THREE.LoadingManager,
-    loadingContainer: HTMLElement,
-    progressHtml: HTMLElement,
-    textHtml: HTMLElement
-) => {
-    loadingContainer.style.display = 'flex';
-    textHtml.innerHTML = 'Loading Assets...';
-
-    loadingManager.onStart = () => {
-        textHtml.innerHTML = 'Starting to load assets...';
-    };
-
-    loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-        const progressValue = itemsLoaded / itemsTotal;
-        progressHtml.style.width = `${progressValue * 100}%`;
-
-        const safePath = (() => {
-            try {
-                return new URL(url).pathname;
-            } catch {
-                return url;
-            }
-        })();
-
-        const ext = safePath.split('.').pop()?.toLowerCase() || '';
-        const isHdr = safePath.includes('/hdr/') || ext === 'hdr';
-        const isImage = ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext);
-        const hasExt = /\.[a-z]{2,4}($|\?)/i.test(safePath);
-
-        if (isHdr) {
-            textHtml.innerHTML = 'Loading Environment...';
-        } else if (isImage) {
-            textHtml.innerHTML = 'Loading Image...';
-        } else if (!hasExt) {
-            if (safePath.includes('/products')) {
-                textHtml.innerHTML = 'Fetching Products...';
-            } else {
-                textHtml.innerHTML = 'Fetching Data...';
-            }
-        } else {
-            textHtml.innerHTML = `Loading: ${safePath}`;
-        }
-    };
-
-    loadingManager.onLoad = () => {
-        textHtml.innerHTML = 'Preparing your experience...';
-        setTimeout(() => {
-            loadingContainer.style.display = 'none';
-        }, 1500);
-    };
-
-    loadingManager.onError = (url) => {
-        textHtml.innerHTML = `Failed to load: ${url}`;
-    };
-}
 
 
 const getActiveCamera = () => {
@@ -207,7 +151,7 @@ const HandleTeleports = async () => {
                 scene: template!.Scene
             }
         }
-    })
+    });
 }
 
 const HandleKeyboard = () => {
