@@ -1,4 +1,4 @@
-/*
+
 
 import { type Attributes, type Entity, System } from 'ecsy';
 import { ControllerComponent } from '../components/ControllerComponent';
@@ -453,6 +453,7 @@ export class ControllerSystem extends System {
     private _getIntersections(controller: THREE.Group, object: THREE.Mesh) {
         const tempMatrix = new THREE.Matrix4();
         const raycaster = new THREE.Raycaster();
+        raycaster.far = 1000;
         tempMatrix.identity().extractRotation(controller.matrixWorld);
         raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
         raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
@@ -469,8 +470,9 @@ ControllerSystem.queries = {
         components: [Object3DComponent]
     }
 };
-*/
 
+
+/*
 import { type Attributes, type Entity, System } from 'ecsy';
 import { ControllerComponent } from '../components/ControllerComponent';
 import * as THREE from 'three';
@@ -514,6 +516,7 @@ export class ControllerSystem extends System {
                 if (!controller) return;
 
                 const intersections = this._getIntersections(controller, object);
+
                 const intersection = intersections[0];
                 const gamepad = source.gamepad;
 
@@ -530,6 +533,8 @@ export class ControllerSystem extends System {
                     });
                 }
                 if (intersection) {
+
+                    console.log(intersection.object)
                     if (!controller.userData.isHover) {
                         controller.userData.isHover = true;
                         controller.userData.lineReset = false;
@@ -848,7 +853,6 @@ export class ControllerSystem extends System {
         }
 
         if (entity.hasComponent(TeleportDefaultComponent)) {
-            console.log('test')
             const component = entity.getMutableComponent(TeleportDefaultComponent);
             if (!component) return;
 
@@ -900,3 +904,5 @@ ControllerSystem.queries = {
         components: [ControllerComponent],
     },
 };
+
+*/
