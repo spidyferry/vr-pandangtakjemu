@@ -259,6 +259,7 @@ export class Register {
                 }
 
                 case 'teleport-point': {
+                    console.log(data?.teleportPoint?.groups)
                     data?.teleportPoint?.groups.forEach(group => {
                         group.children.forEach(child => {
                             if (child instanceof THREE.Mesh && child.isMesh) {

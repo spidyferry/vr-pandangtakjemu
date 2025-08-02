@@ -886,6 +886,7 @@ export class ControllerSystem extends System {
     private _getIntersections(controller: THREE.Group, object: THREE.Mesh) {
         const tempMatrix = new THREE.Matrix4();
         const raycaster = new THREE.Raycaster();
+        raycaster.far = 1000;
         tempMatrix.identity().extractRotation(controller.matrixWorld);
         raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
         raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
