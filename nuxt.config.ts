@@ -4,7 +4,7 @@ export default defineNuxtConfig({
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
-      title: 'Kampung VR | PandangTakJemu',
+      title: 'VR | PandangTakJemu',
       htmlAttrs: {
         lang: 'id',
       },
@@ -36,7 +36,7 @@ export default defineNuxtConfig({
   devServer: {
     host: process.env.HOST || '127.0.0.1',
     port: Number(process.env.PORT) || 3000,
-  }, 
+  },
   typescript: {
     typeCheck: true
   },
