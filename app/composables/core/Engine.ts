@@ -67,6 +67,11 @@ export class CreateEngine implements IEngine {
     this.orbitControls.enableZoom = false;
     this.orbitControls.enablePan = false;
 
+
+    // const offset = new THREE.Vector3().subVectors(this.Camera.position, this.orbitControls.target);
+    // this.Camera.position.copy(this.orbitControls.target).add(offset);
+
+
     this._setupLighting();
     this._setupControllers();
 

@@ -269,26 +269,77 @@ export class Register {
                 }
 
                 case 'teleport-point': {
-                    data?.teleportPoint?.groups.forEach(group => {
-                        group.children.forEach(child => {
-                            if (child instanceof THREE.Mesh && child.isMesh) {
-                                const entity = this.createEntity();
-                                entity.addComponent(ControllerComponent, {
-                                    controllers: data?.controllers,
-                                    renderer: data?.renderer,
-                                    world: this.world
+
+                    if (navigator.xr) {
+                        navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
+                            if (supported) {
+                                data?.teleportPoint?.groups.forEach(group => {
+                                    group.children.forEach(child => {
+                                        if (child instanceof THREE.Mesh && child.isMesh) {
+                                            const entity = this.createEntity();
+                                            entity.addComponent(ControllerComponent, {
+                                                controllers: data?.controllers,
+                                                renderer: data?.renderer,
+                                                world: this.world
+                                            });
+                                            entity.addComponent(Object3DComponent, { object: child });
+                                            entity.addComponent(TeleportPointComponent, { groups: data?.teleportPoint?.groups, scene: data?.teleportPoint?.scene });
+                                        }
+                                    })
                                 });
-                                entity.addComponent(MouseComponent, {
-                                    camera: data?.teleportPoint?.camera,
-                                    pointer: new THREE.Vector2(-9999, -9999),
-                                    renderer: data?.renderer,
-                                    domElement: data?.domElement
-                                })
-                                entity.addComponent(Object3DComponent, { object: child });
-                                entity.addComponent(TeleportPointComponent, { groups: data?.teleportPoint?.groups, scene: data?.teleportPoint?.scene });
+                            } else {
+                                data?.teleportPoint?.groups.forEach(group => {
+                                    group.children.forEach(child => {
+                                        if (child instanceof THREE.Mesh && child.isMesh) {
+                                            const entity = this.createEntity();
+                                            entity.addComponent(MouseComponent, {
+                                                camera: data?.teleportPoint?.camera,
+                                                pointer: new THREE.Vector2(-9999, -9999),
+                                                renderer: data?.renderer,
+                                                domElement: data?.domElement
+                                            })
+                                            entity.addComponent(Object3DComponent, { object: child });
+                                            entity.addComponent(TeleportPointComponent, { groups: data?.teleportPoint?.groups, scene: data?.teleportPoint?.scene });
+                                        }
+                                    })
+                                });
                             }
-                        })
-                    });
+                        }).catch(() => {
+                            data?.teleportPoint?.groups.forEach(group => {
+                                group.children.forEach(child => {
+                                    if (child instanceof THREE.Mesh && child.isMesh) {
+                                        const entity = this.createEntity();
+                                        entity.addComponent(MouseComponent, {
+                                            camera: data?.teleportPoint?.camera,
+                                            pointer: new THREE.Vector2(-9999, -9999),
+                                            renderer: data?.renderer,
+                                            domElement: data?.domElement
+                                        })
+                                        entity.addComponent(Object3DComponent, { object: child });
+                                        entity.addComponent(TeleportPointComponent, { groups: data?.teleportPoint?.groups, scene: data?.teleportPoint?.scene });
+                                    }
+                                })
+                            });
+                        });
+                    } else {
+                        data?.teleportPoint?.groups.forEach(group => {
+                            group.children.forEach(child => {
+                                if (child instanceof THREE.Mesh && child.isMesh) {
+                                    const entity = this.createEntity();
+                                    entity.addComponent(MouseComponent, {
+                                        camera: data?.teleportPoint?.camera,
+                                        pointer: new THREE.Vector2(-9999, -9999),
+                                        renderer: data?.renderer,
+                                        domElement: data?.domElement
+                                    })
+                                    entity.addComponent(Object3DComponent, { object: child });
+                                    entity.addComponent(TeleportPointComponent, { groups: data?.teleportPoint?.groups, scene: data?.teleportPoint?.scene });
+                                }
+                            })
+                        });
+                    }
+
+
                     break;
                 }
 

@@ -1,8 +1,6 @@
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 import { optionalFeatures } from '../../config/webvr.config';
 import { CreateEngine } from '../../core/Engine';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-
 
 export class VR extends CreateEngine {
     constructor(container: HTMLElement) {
@@ -29,6 +27,7 @@ export class VR extends CreateEngine {
     }
 
     private initFallback(container: HTMLElement) {
+        this.orbitControls.target.set(3, 0, 0);
         container.appendChild(this.Renderer.domElement);
     }
 

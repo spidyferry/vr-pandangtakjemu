@@ -43,12 +43,12 @@ export class LoadingHelper {
                 const path = this._safePath(url);
                 const fileExtension = path.split('.').pop()?.toLowerCase() ?? '';
                 const hasExtension = /\.[a-z]{2,4}($|\?)/i.test(path);
-                
+
                 if (path.includes('/hdr/') || fileExtension === 'hdr') {
                     textHtml.innerHTML = `Loading Environment...`;
                 } else if (['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(fileExtension)) {
                     textHtml.innerHTML = `Loading Image...`;
-                } else if(fileExtension  === 'mp4' || fileExtension === 'mp3'){
+                } else if (fileExtension === 'mp4' || fileExtension === 'mp3') {
                     textHtml.innerHTML = `Prepering your video/audio...`;
                 } else if (!hasExtension) {
                     if (path.includes('/products')) {

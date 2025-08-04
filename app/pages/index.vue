@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import * as THREE from 'three';
-import { LDrawConditionalLineMaterial, RGBELoader } from 'three/examples/jsm/Addons.js';
-import { Text } from 'troika-three-text';
 import { TeleportHelper } from '~/composables/helpers/TeleportHelper';
-import { CarouselHelper, InputField, Keyboard, LoadingHelper, Register, Template } from '~/composables/index';
-import type { BoundingBox } from '~/composables/types/BoundingBox.type';
-import type { ClickableMesh } from '~/composables/types/ClickableMesh.type';
-import type { Rating } from '~/composables/types/Rating.type';
+import { LoadingHelper, Register, Template } from '~/composables/index';
+
 
 const container = ref<HTMLDivElement>();
-const canvas = ref<HTMLCanvasElement>();
 const loadingContainer = ref<HTMLDivElement>();
 const progress = ref<HTMLDivElement>();
 const loadingText = ref<HTMLDivElement>();
@@ -17,13 +12,6 @@ const loadingText = ref<HTMLDivElement>();
 let template: InstanceType<typeof Template.VR> | null = null;
 let register: Register;
 let WorldPosition: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
-let CardSpacing: number = .6;
-let carousel: CarouselHelper;
-let keyboard: Keyboard;
-let usernameField: InputField;
-let passwordField: InputField
-let loginForm: THREE.Group;
-let loadingHelper: LoadingHelper | null = null;
 
 onMounted(async () => {
     if (!container.value) return;
@@ -33,12 +21,21 @@ onMounted(async () => {
     register = new Register();
     const backsound = template.setAudio('/sounds/sounds-effect-nature.mp3');
 
-    template.Renderer.xr.addEventListener('sessionstart', () => {
-        backsound.play();
-    })
+    template?.Renderer.xr.addEventListener('sessionstart', () => {
+        if (!backsound.isPlaying) {
+            backsound.play();
+
+            const utter = new SpeechSynthesisUtterance('Selamat datang di kampung Kampung Tua Bakau Serip, Nongsa, Batam, Provinsi Kepulauan Riau, Indonesia');
+            utter.lang = "id-ID";
+            speechSynthesis.cancel();
+            speechSynthesis.speak(utter);
+        }
+    });
+
+    
 
     if (loadingContainer.value && progress.value && loadingText.value && loadingContainer.value) {
-        loadingHelper = new LoadingHelper(
+        new LoadingHelper(
             {
                 loadingContainer: loadingContainer.value,
                 loadingManager: template.LoadingManager,
@@ -83,7 +80,10 @@ const HandleTeleports = async () => {
                     target: [1],
                     rotation: [
                         new THREE.Vector3(0, -90, 0),
-                    ]// -90
+                    ],// -90
+                    tts: [
+                        'Anda berada di lorong tracking',
+                    ]
                 },
                 {
                     points: [
@@ -94,6 +94,10 @@ const HandleTeleports = async () => {
                     rotation: [
                         new THREE.Vector3(0, 60, 0),
                         new THREE.Vector3(0, -120, 0)
+                    ],
+                    tts: [
+                        'Sekarang anda berada di gerbang area tracking',
+                        'anda berada di lapangan mangrove'
                     ]
                 },
                 {
@@ -109,22 +113,37 @@ const HandleTeleports = async () => {
                         new THREE.Vector3(0, 90, 0),
                         new THREE.Vector3(0, 180, 0),
                         new THREE.Vector3(0, -45, 0)
+                    ],
+                    tts: [
+                        'anda berada di Pojok Literasi',
+                        'anda berada di Lorong Cinta',
+                        'anda berada di Viewe Negara Jiran',
+                        'anda berada di lorong tracking',
                     ]
                 },
                 {
                     points: [new THREE.Vector3(-.5, 0, 3)],
                     target: [2],
-                    rotation: [new THREE.Vector3(0, 180, 0)]
+                    rotation: [new THREE.Vector3(0, 180, 0)],
+                    tts: [
+                        'Anda berada di lapangan mangrove',
+                    ]
                 },
                 {
                     points: [new THREE.Vector3(-2.5, 0, 1.5)],
                     target: [2],
-                    rotation: [new THREE.Vector3(0, 60, 0)]
+                    rotation: [new THREE.Vector3(0, 60, 0)],
+                    tts: [
+                        'Anda berada di lapangan mangrove',
+                    ]
                 },
                 {
                     points: [new THREE.Vector3(-2.5, 0, -2)],
                     target: [2],
-                    rotation: [new THREE.Vector3(0, 50, 0)]
+                    rotation: [new THREE.Vector3(0, 50, 0)],
+                    tts: [
+                        'Anda berada di lapangan mangrove',
+                    ]
                 },
             ]
         }

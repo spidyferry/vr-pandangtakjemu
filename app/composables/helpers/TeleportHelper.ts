@@ -39,6 +39,7 @@ type PointOptions = {
             points: Vector3[];
             target: number[];
             rotation: Vector3[];
+            tts: string[]
         }[];
     };
 };
@@ -104,6 +105,7 @@ export class TeleportHelper {
             rotation: Vector3[];
             points: Vector3[];
             target: number[];
+            tts: string[];
         }[];
     }) {
         if (!data?.env?.length || !this._loadingManager) return;
@@ -140,6 +142,8 @@ export class TeleportHelper {
                 const circle = new Mesh(geometry, material);
                 circle.position.copy(point);
 
+                circle.userData.tts = config.tts[pointIndex];
+
                 const rotation = config.rotation?.[pointIndex];
                 if (rotation instanceof Vector3) {
                     const euler = new Euler(
@@ -149,7 +153,7 @@ export class TeleportHelper {
                     );
                     circle.rotation.copy(euler);
                 }
-                
+
                 const targetIndex = config.target[pointIndex];
                 if (typeof targetIndex === 'number') {
                     circle.userData.texture = this.hdrTextures[targetIndex];
