@@ -3,6 +3,7 @@ import type { IEngine } from '../types/index';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory.js';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import { OrbitControls } from 'three/examples/jsm/Addons.js';
 
 /**
  * CreateEngine is the core WebXR engine initializer.
@@ -22,6 +23,7 @@ export class CreateEngine implements IEngine {
   public RightController!: THREE.Group;
   public LeftControllerGrip!: THREE.Group;
   public RightControllerGrip!: THREE.Group;
+  public orbitControls!: OrbitControls;
   public Controllers!: THREE.Group[];
 
   public AmbientLight!: THREE.AmbientLight;
@@ -53,29 +55,22 @@ export class CreateEngine implements IEngine {
 
     this.Renderer.setPixelRatio(window.devicePixelRatio);
     this.Renderer.setSize(window.innerWidth, window.innerHeight);
-    this.Renderer.xr.enabled = true;
     this.Renderer.localClippingEnabled = true;
     this.Renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.Renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     window.addEventListener('resize', this._onResize);
 
+    this.orbitControls = new OrbitControls(this.Camera, this.Renderer.domElement);
+    this.orbitControls.enableDamping = true;
+    this.orbitControls.dampingFactor = 0.05;
+    this.orbitControls.enableZoom = false;
+    this.orbitControls.enablePan = false;
+
     this._setupLighting();
     this._setupControllers();
 
     this.Scene.add(this.Player);
-
-    this.Renderer.xr.addEventListener('sessionstart', () => {
-      const camera = this.Renderer.xr.getCamera();
-
-      if (camera.isArrayCamera) {
-        for (const subCam of camera.cameras) {
-          subCam.layers.disableAll();
-          subCam.layers.enable(0);
-          subCam.layers.enable(1);
-        }
-      }
-    })
   }
 
   /**

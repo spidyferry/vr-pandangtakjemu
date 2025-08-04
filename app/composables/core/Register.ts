@@ -1,4 +1,4 @@
-import { World } from 'ecsy';
+import { type Entity, World } from 'ecsy';
 import {
     type ComponentConstructor,
     Component,
@@ -29,6 +29,8 @@ import { CarouselComponent } from './ecs/components/CarouselComponent';
 import type { CarouselHelper } from '#imports';
 import { TeleportPointComponent } from './ecs/components/TeleportPointComponent';
 import { TeleportPointSystem } from './ecs/systems/TeleportPointSystem';
+import { MouseComponent } from './ecs/components/MouseComponent';
+import { MouseSystem } from './ecs/systems/MouseSystem';
 
 
 /**
@@ -53,6 +55,7 @@ export interface DataOptions {
     data?: {
         controllers?: Group[];
         renderer?: WebGLRenderer;
+        domElement?: HTMLElement;
         draggableReturn?: {
             mesh: Mesh;
             clickSound?: Audio;
@@ -81,6 +84,7 @@ export interface DataOptions {
         teleportPoint?: {
             groups: Group[];
             scene: THREE.Scene;
+            camera: THREE.PerspectiveCamera,
         },
         keyboard?: {
             camera: THREE.Camera,
@@ -106,23 +110,22 @@ export class Register {
         this._registerComponent(Object3DComponent);
         this._registerComponent(ControllerComponent);
         this._registerComponent(ButtonComponent);
-        this._registerComponent(DraggableReturnComponent);
-        this._registerComponent(DraggableDefaultComponent);
-        this._registerComponent(MovementFPSComponent);
-        this._registerComponent(TeleportDefaultComponent);
-        this._registerComponent(KeyboardComponent);
-        this._registerComponent(InputFieldComponent);
-        this._registerComponent(CarouselComponent);
-        this._registerComponent(TeleportPointComponent)
+
+        //this._registerComponent(MovementFPSComponent);
+        //this._registerComponent(TeleportDefaultComponent);
+        //this._registerComponent(KeyboardComponent);
+        //this._registerComponent(InputFieldComponent);
+        //this._registerComponent(CarouselComponent);
+        this._registerComponent(TeleportPointComponent);
+        this._registerComponent(MouseComponent);
 
         this._registerSystem(ControllerSystem);
-        this._registerSystem(ButtonSystem);
-        this._registerSystem(DraggableReturnSystem);
-        this._registerSystem(DraggableDefaultSystem);
-        this._registerSystem(TeleportDefaultSystem);
-        this._registerSystem(KeyboardSystem);
-        this._registerSystem(InputFieldSystem);
+        //this._registerSystem(ButtonSystem);
+        //this._registerSystem(TeleportDefaultSystem);
+        //this._registerSystem(KeyboardSystem);
+        //this._registerSystem(InputFieldSystem);
         this._registerSystem(TeleportPointSystem);
+        this._registerSystem(MouseSystem);
     }
 
     /**
@@ -209,6 +212,9 @@ export class Register {
 
 
                 case 'draggable-return': {
+                    this._registerComponent(DraggableReturnComponent);
+                    this._registerSystem(DraggableReturnSystem);
+
                     const entity = this.createEntity();
                     entity.addComponent(ControllerComponent, {
                         controllers: data?.controllers,
@@ -221,6 +227,9 @@ export class Register {
                 }
 
                 case 'draggable-default': {
+                    this._registerComponent(DraggableDefaultComponent);
+                    this._registerSystem(DraggableDefaultSystem);
+
                     const entity = this.createEntity();
                     entity.addComponent(ControllerComponent, {
                         controllers: data?.controllers,
@@ -249,6 +258,7 @@ export class Register {
                         renderer: data?.renderer,
                         world: this.world
                     });
+
                     entity.addComponent(Object3DComponent, { object: data?.teleportDefault?.floor });
                     entity.addComponent(TeleportDefaultComponent, {
                         point: data?.teleportDefault?.point,
@@ -259,7 +269,6 @@ export class Register {
                 }
 
                 case 'teleport-point': {
-                    console.log(data?.teleportPoint?.groups)
                     data?.teleportPoint?.groups.forEach(group => {
                         group.children.forEach(child => {
                             if (child instanceof THREE.Mesh && child.isMesh) {
@@ -269,6 +278,12 @@ export class Register {
                                     renderer: data?.renderer,
                                     world: this.world
                                 });
+                                entity.addComponent(MouseComponent, {
+                                    camera: data?.teleportPoint?.camera,
+                                    pointer: new THREE.Vector2(-9999, -9999),
+                                    renderer: data?.renderer,
+                                    domElement: data?.domElement
+                                })
                                 entity.addComponent(Object3DComponent, { object: child });
                                 entity.addComponent(TeleportPointComponent, { groups: data?.teleportPoint?.groups, scene: data?.teleportPoint?.scene });
                             }
@@ -318,6 +333,39 @@ export class Register {
     private _registerSystem(system: SystemConstructor<System>): void {
         if (!this.world.getSystem(system)) {
             this.world.registerSystem(system);
+        }
+    }
+
+    private _isSupported(entity: Entity, options: DataOptions) {
+        const data = options.data;
+
+        if (navigator && navigator.xr) {
+            console.log(navigator.xr)
+            navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
+                if (supported) {
+                    entity.addComponent(ControllerComponent, {
+                        controllers: data?.controllers,
+                        renderer: data?.renderer,
+                        world: this.world
+                    });
+
+                } else {
+                    console.log('immersive-vr not supported');
+                    entity.addComponent(MouseComponent, {
+                        camera: data?.teleportPoint?.camera,
+                        pointer: new THREE.Vector2(),
+                        renderer: data?.renderer
+                    })
+                }
+            }).catch(() => {
+                entity.addComponent(MouseComponent, {
+                    camera: data?.teleportPoint?.camera,
+                    pointer: new THREE.Vector2(),
+                    renderer: data?.renderer
+                })
+            });
+        } else {
+
         }
     }
 }

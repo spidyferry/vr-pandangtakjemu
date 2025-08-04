@@ -1,5 +1,3 @@
-
-
 import { type Attributes, type Entity, System } from 'ecsy';
 import { ControllerComponent } from '../components/ControllerComponent';
 import * as THREE from 'three';
@@ -49,7 +47,6 @@ export class ControllerSystem extends System {
                 const gamepad = source.gamepad;
 
                 if (intersection) {
-                    console.log(intersection.object)
                     if (!controller.userData.isHover) {
                         controller.userData.isHover = true;
                         controller.userData.lineReset = false;

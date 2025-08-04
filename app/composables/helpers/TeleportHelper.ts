@@ -92,7 +92,7 @@ export class TeleportHelper {
             opacity: 0.25,
         });
 
-        const geometry = new PlaneGeometry(size, size).rotateX(-Math.PI / 2);
+        const geometry = new PlaneGeometry(size, size); //.rotateX(-Math.PI / 2);
 
         this.marker = new Mesh(geometry.clone(), material.clone());
         this.floor = new Mesh(geometry.clone(), material.clone());
@@ -136,7 +136,7 @@ export class TeleportHelper {
                     map: texture
                 });
 
-                const geometry = new CircleGeometry(0.25, 32).rotateX(-Math.PI / 2);
+                const geometry = new CircleGeometry(0.25, 32);//.rotateX(-Math.PI / 2);
                 const circle = new Mesh(geometry, material);
                 circle.position.copy(point);
 
