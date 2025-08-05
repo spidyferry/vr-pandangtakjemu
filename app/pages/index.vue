@@ -119,6 +119,9 @@ const HandleTeleports = async () => {
                     ],// -90
                     tts: [
                         'Anda berada di lorong tracking',
+                    ],
+                    name: [
+                        'Lorong Tracking'
                     ]
                 },
                 {
@@ -134,6 +137,10 @@ const HandleTeleports = async () => {
                     tts: [
                         'Sekarang anda berada di gerbang area tracking',
                         'anda berada di lapangan mangrove'
+                    ],
+                    name: [
+                        'Gerbang Area Tracking',
+                        'Lapangan Mangrove'
                     ]
                 },
                 {
@@ -155,6 +162,11 @@ const HandleTeleports = async () => {
                         'anda berada di Lorong Cinta',
                         'anda berada di View Negara Jiran',
                         'anda berada di lorong tracking',
+                    ], name: [
+                        'Pojok Literasi',
+                        'Lorong Cinta',
+                        'View Negara Jiran',
+                        'Lorong Tracking'
                     ]
                 },
                 {
@@ -163,6 +175,8 @@ const HandleTeleports = async () => {
                     rotation: [new THREE.Vector3(0, 180, 0)],
                     tts: [
                         'Anda berada di lapangan mangrove',
+                    ], name: [
+                        'Lapangan Mangrove'
                     ]
                 },
                 {
@@ -171,6 +185,8 @@ const HandleTeleports = async () => {
                     rotation: [new THREE.Vector3(0, 60, 0)],
                     tts: [
                         'Anda berada di lapangan mangrove',
+                    ], name: [
+                        'Lapangan Mangrove'
                     ]
                 },
                 {
@@ -179,6 +195,8 @@ const HandleTeleports = async () => {
                     rotation: [new THREE.Vector3(0, 50, 0)],
                     tts: [
                         'Anda berada di lapangan mangrove',
+                    ], name: [
+                        'Lapangan Mangrove'
                     ]
                 },
             ]

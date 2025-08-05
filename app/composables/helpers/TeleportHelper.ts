@@ -19,6 +19,7 @@ import {
     WebGLRenderer
 } from "three";
 import { RGBELoader } from "three/examples/jsm/Addons.js";
+import { Text } from "troika-three-text";
 
 type DefaultOptions = {
     type: 'default';
@@ -40,6 +41,7 @@ type PointOptions = {
             target: number[];
             rotation: Vector3[];
             tts: string[]
+            name: string[]
         }[];
     };
 };
@@ -106,6 +108,7 @@ export class TeleportHelper {
             points: Vector3[];
             target: number[];
             tts: string[];
+            name: string[]
         }[];
     }) {
         if (!data?.env?.length || !this._loadingManager) return;
@@ -144,20 +147,28 @@ export class TeleportHelper {
 
                 circle.userData.tts = config.tts[pointIndex];
 
-                const rotation = config.rotation?.[pointIndex];
-                if (rotation instanceof Vector3) {
-                    const euler = new Euler(
-                        MathUtils.degToRad(rotation.x),
-                        MathUtils.degToRad(rotation.y),
-                        MathUtils.degToRad(rotation.z)
-                    );
-                    circle.rotation.copy(euler);
-                }
-
                 const targetIndex = config.target[pointIndex];
                 if (typeof targetIndex === 'number') {
                     circle.userData.texture = this.hdrTextures[targetIndex];
                     circle.userData.target = targetIndex;
+                }
+
+                const name = config.name?.[pointIndex];
+                if (name) {
+                    const label = this._createText(name);
+                    label.position.set(point.x, point.y + 0.4, point.z); // offset ke atas
+                    group.add(label);
+
+                    const rotation = config.rotation?.[pointIndex];
+                    if (rotation instanceof Vector3) {
+                        const euler = new Euler(
+                            MathUtils.degToRad(rotation.x),
+                            MathUtils.degToRad(rotation.y),
+                            MathUtils.degToRad(rotation.z)
+                        );
+                        circle.rotation.copy(euler);
+                        label.rotation.copy(euler);
+                    }
                 }
 
                 group.add(circle);
@@ -168,6 +179,20 @@ export class TeleportHelper {
         });
     }
 
+    private _createText(name: string): Text {
+        const text = new Text();
+        text.text = name;
+        text.fontSize = 0.25;
+        text.color = 0x333333;
+        text.anchorX = 'center';
+        text.anchorY = 'bottom';
+        text.outlineWidth = 0.005;
+        text.outlineColor = 'white';
+
+        text.sync();
+
+        return text;
+    }
     private _loadEnv(path: string): Promise<Texture> {
         const isJPG = path.endsWith('.jpg') || path.endsWith('.jpeg') || path.endsWith('.png');
 

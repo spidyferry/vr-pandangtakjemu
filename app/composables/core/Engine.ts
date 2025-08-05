@@ -3,7 +3,7 @@ import type { IEngine } from '../types/index';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory.js';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-import { OrbitControls } from 'three/examples/jsm/Addons.js';
+import { OrbitControls, TrackballControls } from 'three/examples/jsm/Addons.js';
 
 /**
  * CreateEngine is the core WebXR engine initializer.
@@ -24,6 +24,7 @@ export class CreateEngine implements IEngine {
   public LeftControllerGrip!: THREE.Group;
   public RightControllerGrip!: THREE.Group;
   public orbitControls!: OrbitControls;
+  public trackballControls!: TrackballControls;
   public Controllers!: THREE.Group[];
 
   public AmbientLight!: THREE.AmbientLight;
@@ -66,6 +67,15 @@ export class CreateEngine implements IEngine {
     this.orbitControls.dampingFactor = 0.05;
     this.orbitControls.enableZoom = false;
     this.orbitControls.enablePan = false;
+
+    this.trackballControls = new TrackballControls(this.Camera, this.Renderer.domElement);
+    this.trackballControls.rotateSpeed = 3.0;
+    this.trackballControls.zoomSpeed = 1.2;
+    this.trackballControls.panSpeed = 0.8;
+    this.trackballControls.noZoom = true;
+    this.trackballControls.noPan = true;
+    this.trackballControls.staticMoving = true;
+    this.trackballControls.dynamicDampingFactor = 0.2;
 
 
     // const offset = new THREE.Vector3().subVectors(this.Camera.position, this.orbitControls.target);
