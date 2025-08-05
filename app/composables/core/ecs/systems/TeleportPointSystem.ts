@@ -7,6 +7,7 @@ import {
     Mesh,
     MeshStandardMaterial,
     Texture,
+    Vector3,
 } from "three";
 
 export class TeleportPointSystem extends System {
@@ -31,16 +32,19 @@ export class TeleportPointSystem extends System {
                         });
                     }
 
-                   
+
                     const ttsText = object?.userData.tts as string | undefined;
                     if (ttsText && typeof ttsText === 'string') {
                         const utter = new SpeechSynthesisUtterance(ttsText);
-                        utter.lang = "id-ID"; 
-                        speechSynthesis.cancel(); 
+                        utter.lang = "id-ID";
+                        speechSynthesis.cancel();
                         speechSynthesis.speak(utter);
                     }
 
+                    component.orbitControls?.target.copy(object?.position.clone() || new Vector3());
+
                     component.state = 'none';
+
                     break;
                 }
 

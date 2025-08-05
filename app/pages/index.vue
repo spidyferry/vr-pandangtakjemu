@@ -9,6 +9,10 @@ const loadingContainer = ref<HTMLDivElement>();
 const progress = ref<HTMLDivElement>();
 const loadingText = ref<HTMLDivElement>();
 
+const showAudioPrompt = ref<boolean>(true);
+const showAudioPopup = ref<boolean>(true);
+let backsound: THREE.Audio | null = null;
+
 let template: InstanceType<typeof Template.VR> | null = null;
 let register: Register;
 let WorldPosition: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
@@ -19,20 +23,6 @@ onMounted(async () => {
     template = new Template.VR(container.value);
     template.Renderer.setAnimationLoop(animate);
     register = new Register();
-    const backsound = template.setAudio('/sounds/sounds-effect-nature.mp3');
-
-    template?.Renderer.xr.addEventListener('sessionstart', () => {
-        if (!backsound.isPlaying) {
-            backsound.play();
-
-            const utter = new SpeechSynthesisUtterance('Selamat datang di kampung Kampung Tua Bakau Serip, Nongsa, Batam, Provinsi Kepulauan Riau, Indonesia');
-            utter.lang = "id-ID";
-            speechSynthesis.cancel();
-            speechSynthesis.speak(utter);
-        }
-    });
-
-    
 
     if (loadingContainer.value && progress.value && loadingText.value && loadingContainer.value) {
         new LoadingHelper(
@@ -40,14 +30,60 @@ onMounted(async () => {
                 loadingContainer: loadingContainer.value,
                 loadingManager: template.LoadingManager,
                 progressHtml: progress.value,
-                textHtml: loadingText.value
+                textHtml: loadingText.value,
+                template: template
             }
         );
     }
 
     getActiveCamera()?.getWorldPosition(WorldPosition);
     await HandleTeleports();
+
+    backsound = template.setAudio('/sounds/sounds-effect-nature.mp3');
+
+    if (navigator.xr) {
+        navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
+            if (supported) {
+                showAudioPrompt.value = false;
+                template?.Renderer.xr.addEventListener('sessionstart', () => {
+                    if (!backsound?.isPlaying) {
+                        backsound?.play();
+
+                        const utter = new SpeechSynthesisUtterance('Selamat datang di kampung Kampung Tua Bakau Serip, Nongsa, Batam, Provinsi Kepulauan Riau, Indonesia');
+                        utter.lang = "id-ID";
+                        speechSynthesis.cancel();
+                        speechSynthesis.speak(utter);
+                    }
+                })
+            } else {
+                showAudioPrompt.value = true;
+            }
+        }).catch(() => {
+            showAudioPrompt.value = true;
+        });
+    } else {
+        showAudioPrompt.value = true;
+    }
 });
+
+const handleAudioConsent = async (consent: boolean) => {
+    showAudioPrompt.value = false;
+
+    if (consent && template) {
+        try {
+            backsound?.play();
+        } catch (err) {
+            console.warn("Gagal memutar audio:", err);
+        }
+
+        const utter = new SpeechSynthesisUtterance(
+            'Selamat datang di kampung Kampung Tua Bakau Serip, Nongsa, Batam, Provinsi Kepulauan Riau, Indonesia'
+        );
+        utter.lang = "id-ID";
+        speechSynthesis.cancel();
+        speechSynthesis.speak(utter);
+    }
+};
 
 
 const getActiveCamera = () => {
@@ -75,7 +111,7 @@ const HandleTeleports = async () => {
             config: [
                 {
                     points: [
-                        new THREE.Vector3(3, 0, 0),
+                        new THREE.Vector3(3, 1.6, 0),
                     ], // 3, 0, 0
                     target: [1],
                     rotation: [
@@ -87,8 +123,8 @@ const HandleTeleports = async () => {
                 },
                 {
                     points: [
-                        new THREE.Vector3(-2, 0, -1.2), //mundur 
-                        new THREE.Vector3(2, 0, 1.2) // maju
+                        new THREE.Vector3(-2, 1.6, -1.2), //mundur 
+                        new THREE.Vector3(2, 1.6, 1.2) // maju
                     ],
                     target: [0, 2],
                     rotation: [
@@ -102,10 +138,10 @@ const HandleTeleports = async () => {
                 },
                 {
                     points: [
-                        new THREE.Vector3(.5, 0, -1.5), // kiri
-                        new THREE.Vector3(-1.5, 0, 2.25), //tengah
-                        new THREE.Vector3(1, 0, 3), // kanan
-                        new THREE.Vector3(2, 0, -4) // mundur
+                        new THREE.Vector3(.5, 1.6, -1.5), // kiri
+                        new THREE.Vector3(-1.5, 1.6, 2.25), //tengah
+                        new THREE.Vector3(1, 1.6, 3), // kanan
+                        new THREE.Vector3(2, 1.6, -4) // mundur
                     ],
                     target: [3, 5, 4, 1],
                     rotation: [
@@ -117,12 +153,12 @@ const HandleTeleports = async () => {
                     tts: [
                         'anda berada di Pojok Literasi',
                         'anda berada di Lorong Cinta',
-                        'anda berada di Viewe Negara Jiran',
+                        'anda berada di View Negara Jiran',
                         'anda berada di lorong tracking',
                     ]
                 },
                 {
-                    points: [new THREE.Vector3(-.5, 0, 3)],
+                    points: [new THREE.Vector3(-.5, 1.6, 3)],
                     target: [2],
                     rotation: [new THREE.Vector3(0, 180, 0)],
                     tts: [
@@ -130,7 +166,7 @@ const HandleTeleports = async () => {
                     ]
                 },
                 {
-                    points: [new THREE.Vector3(-2.5, 0, 1.5)],
+                    points: [new THREE.Vector3(-2.5, 1.6, 1.5)],
                     target: [2],
                     rotation: [new THREE.Vector3(0, 60, 0)],
                     tts: [
@@ -138,7 +174,7 @@ const HandleTeleports = async () => {
                     ]
                 },
                 {
-                    points: [new THREE.Vector3(-2.5, 0, -2)],
+                    points: [new THREE.Vector3(-2.5, 1.6, -2)],
                     target: [2],
                     rotation: [new THREE.Vector3(0, 50, 0)],
                     tts: [
@@ -159,7 +195,7 @@ const HandleTeleports = async () => {
         template.Scene.background = env;
     }
 
-    register.addFeatures({
+    await register.addFeatures({
         requiredFeatures: ['teleport-point'],
         data: {
             controllers: template?.Controllers,
@@ -169,6 +205,7 @@ const HandleTeleports = async () => {
                 groups: teleport.groups,
                 scene: template!.Scene,
                 camera: template.Camera,
+                orbitControls: template?.orbitControls
             }
         }
     });
@@ -182,7 +219,9 @@ const animate = () => {
         register.update(delta, elapsed);
     }
 
-    if (template?.orbitControls) template.orbitControls.update()
+    if (template?.orbitControls) {
+        template.orbitControls.update()
+    }
     template?.render();
 }
 </script>
@@ -198,6 +237,18 @@ const animate = () => {
                 </div>
             </div>
         </div>
+
+        <!-- Popup untuk enable audio -->
+        <div v-if="showAudioPrompt" class="audio-popup">
+            <div class="audio-popup-content">
+                <p>Aktifkan suara untuk pengalaman lebih imersif?</p>
+                <div class="buttons">
+                    <button @click="handleAudioConsent(true)">Ya</button>
+                    <button @click="handleAudioConsent(false)">Tidak</button>
+                </div>
+            </div>
+        </div>
+
 
         <div ref="container" style="width: 100%; height: 100%;">
         </div>

@@ -14,12 +14,14 @@ export class LoadingHelper {
         loadingManager,
         loadingContainer,
         progressHtml,
-        textHtml
+        textHtml,
+        template
     }: {
         loadingManager: LoadingManager,
         loadingContainer: HTMLElement,
         progressHtml: HTMLElement,
-        textHtml: HTMLElement
+        textHtml: HTMLElement,
+        template: any
     }) {
         this.loadingManager = loadingManager;
 

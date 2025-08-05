@@ -31,6 +31,7 @@ import { TeleportPointComponent } from './ecs/components/TeleportPointComponent'
 import { TeleportPointSystem } from './ecs/systems/TeleportPointSystem';
 import { MouseComponent } from './ecs/components/MouseComponent';
 import { MouseSystem } from './ecs/systems/MouseSystem';
+import type { OrbitControls } from 'three/examples/jsm/Addons.js';
 
 
 /**
@@ -85,6 +86,7 @@ export interface DataOptions {
             groups: Group[];
             scene: THREE.Scene;
             camera: THREE.PerspectiveCamera,
+            orbitControls: OrbitControls
         },
         keyboard?: {
             camera: THREE.Camera,
@@ -269,7 +271,20 @@ export class Register {
                 }
 
                 case 'teleport-point': {
-
+                    data?.teleportPoint?.groups.forEach(group => {
+                        group.children.forEach(child => {
+                            if (child instanceof THREE.Mesh && child.isMesh) {
+                                const entity = this.createEntity();
+                                entity.addComponent(ControllerComponent, {
+                                    controllers: data?.controllers,
+                                    renderer: data?.renderer,
+                                    world: this.world
+                                });
+                                entity.addComponent(Object3DComponent, { object: child });
+                                entity.addComponent(TeleportPointComponent, { groups: data?.teleportPoint?.groups, scene: data?.teleportPoint?.scene, orbitControls: data?.teleportPoint?.orbitControls, camera: data?.teleportPoint?.camera });
+                            }
+                        })
+                    });
                     if (navigator.xr) {
                         navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
                             if (supported) {
@@ -283,7 +298,7 @@ export class Register {
                                                 world: this.world
                                             });
                                             entity.addComponent(Object3DComponent, { object: child });
-                                            entity.addComponent(TeleportPointComponent, { groups: data?.teleportPoint?.groups, scene: data?.teleportPoint?.scene });
+                                            entity.addComponent(TeleportPointComponent, { groups: data?.teleportPoint?.groups, scene: data?.teleportPoint?.scene, orbitControls: data?.teleportPoint?.orbitControls, camera: data?.teleportPoint?.camera });
                                         }
                                     })
                                 });
@@ -299,7 +314,7 @@ export class Register {
                                                 domElement: data?.domElement
                                             })
                                             entity.addComponent(Object3DComponent, { object: child });
-                                            entity.addComponent(TeleportPointComponent, { groups: data?.teleportPoint?.groups, scene: data?.teleportPoint?.scene });
+                                            entity.addComponent(TeleportPointComponent, { groups: data?.teleportPoint?.groups, scene: data?.teleportPoint?.scene, orbitControls: data?.teleportPoint?.orbitControls, camera: data?.teleportPoint?.camera });
                                         }
                                     })
                                 });
@@ -316,7 +331,7 @@ export class Register {
                                             domElement: data?.domElement
                                         })
                                         entity.addComponent(Object3DComponent, { object: child });
-                                        entity.addComponent(TeleportPointComponent, { groups: data?.teleportPoint?.groups, scene: data?.teleportPoint?.scene });
+                                        entity.addComponent(TeleportPointComponent, { groups: data?.teleportPoint?.groups, scene: data?.teleportPoint?.scene, orbitControls: data?.teleportPoint?.orbitControls, camera: data?.teleportPoint?.camera });
                                     }
                                 })
                             });
@@ -333,7 +348,7 @@ export class Register {
                                         domElement: data?.domElement
                                     })
                                     entity.addComponent(Object3DComponent, { object: child });
-                                    entity.addComponent(TeleportPointComponent, { groups: data?.teleportPoint?.groups, scene: data?.teleportPoint?.scene });
+                                    entity.addComponent(TeleportPointComponent, { groups: data?.teleportPoint?.groups, scene: data?.teleportPoint?.scene, orbitControls: data?.teleportPoint?.orbitControls, camera: data?.teleportPoint?.camera });
                                 }
                             })
                         });

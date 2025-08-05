@@ -14,13 +14,11 @@ export class MouseSystem extends System {
         const mouse = mouseEntity.getComponent(MouseComponent);
         if (!mouse || !mouse.domElement) return;
 
-        // ✅ Setup event listeners (once)
         if (!this.listenerRegistered) {
             this._registerEventListeners(mouse);
             this.listenerRegistered = true;
         }
 
-        // ✅ Handle hover detection every frame
         const intersections = this._getIntersections(mouse);
         const hoveredObject = intersections[0]?.object;
 
@@ -60,8 +58,6 @@ export class MouseSystem extends System {
 
             const teleport = entity.getMutableComponent(TeleportPointComponent);
             if (teleport) teleport.state = 'teleport';
-
-            console.log('Clicked teleport point:', clickedObject);
         });
     }
 
