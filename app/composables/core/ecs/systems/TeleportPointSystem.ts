@@ -33,13 +33,13 @@ export class TeleportPointSystem extends System {
                     }
 
 
-                    const ttsText = object?.userData.tts as string | undefined;
-                    if (ttsText && typeof ttsText === 'string') {
-                        const utter = new SpeechSynthesisUtterance(ttsText);
-                        utter.lang = "id-ID";
-                        speechSynthesis.cancel();
-                        speechSynthesis.speak(utter);
-                    }
+                    // const ttsText = object?.userData.tts as string | undefined;
+                    // if (ttsText && typeof ttsText === 'string') {
+                    //     const utter = new SpeechSynthesisUtterance(ttsText);
+                    //     utter.lang = "id-ID";
+                    //     speechSynthesis.cancel();
+                    //     speechSynthesis.speak(utter);
+                    // }
 
                     /*
                     const position = object?.position.clone();
