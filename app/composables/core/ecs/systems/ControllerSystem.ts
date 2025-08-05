@@ -283,7 +283,6 @@ export class ControllerSystem extends System {
 
 
     private _StartAction(index: number, controller: THREE.Group, entity: Entity, intersection: THREE.Intersection, renderer: THREE.WebGLRenderer) {
-        console.log(index)
         switch (index) {
             case 0:
                 this._updateColor(controller, 0x22d3ee);

@@ -48,11 +48,6 @@ onMounted(async () => {
                 template?.Renderer.xr.addEventListener('sessionstart', () => {
                     if (!backsound?.isPlaying) {
                         backsound?.play();
-
-                        const utter = new SpeechSynthesisUtterance('Selamat datang di kampung Kampung Tua Bakau Serip, Nongsa, Batam, Provinsi Kepulauan Riau, Indonesia');
-                        utter.lang = "id-ID";
-                        speechSynthesis.cancel();
-                        speechSynthesis.speak(utter);
                     }
                 })
             } else {
