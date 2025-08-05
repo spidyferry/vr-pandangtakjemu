@@ -41,8 +41,17 @@ export class TeleportPointSystem extends System {
                         speechSynthesis.speak(utter);
                     }
 
-                    component.orbitControls?.target.copy(object?.position.clone() || new Vector3());
+                    /*
+                    const position = object?.position.clone();
+                    const offset = new Vector3(0, 0, -1);
 
+                    if (!position || !offset) return;
+
+                    const newCameraPosition = position.clone().add(offset);
+                    component.camera?.position.copy(newCameraPosition);
+                    component.orbitControls?.target.copy(position);
+                    component.orbitControls?.update();
+                    */
                     component.state = 'none';
 
                     break;
