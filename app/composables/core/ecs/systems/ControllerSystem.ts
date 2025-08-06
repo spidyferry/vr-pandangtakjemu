@@ -15,6 +15,9 @@ import { TeleportPointComponent } from '../components/TeleportPointComponent';
 
 export class ControllerSystem extends System {
     private previousButtonStates!: { left: boolean[]; right: boolean[]; };
+    private raycaster: THREE.Raycaster = new THREE.Raycaster();
+    private matrix: THREE.Matrix4 = new THREE.Matrix4();
+
 
     override init(attributes?: Attributes): void {
         this.previousButtonStates = {
@@ -446,15 +449,16 @@ export class ControllerSystem extends System {
     }
 
 
-    private _getIntersections(controller: THREE.Group, object: THREE.Mesh) {
-        const tempMatrix = new THREE.Matrix4();
-        const raycaster = new THREE.Raycaster();
-        tempMatrix.identity().extractRotation(controller.matrixWorld);
-        raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
-        raycaster.ray.direction.set(0, 0, -1).applyMatrix4(tempMatrix);
+    private _getIntersections(controller: THREE.Group, object: THREE.Object3D) {
+        this.matrix.identity().extractRotation(controller.matrixWorld);
         controller.updateMatrixWorld();
-        return raycaster.intersectObject(object, false);
+        this.raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+        this.raycaster.ray.direction.set(0, 0, -1).applyMatrix4(this.matrix);
+
+        return this.raycaster.intersectObject(object, true);
     }
+
+
 }
 
 ControllerSystem.queries = {

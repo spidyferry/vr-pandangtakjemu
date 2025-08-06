@@ -20,10 +20,12 @@ import {
 } from "three";
 import { RGBELoader } from "three/examples/jsm/Addons.js";
 import { Text } from "troika-three-text";
+import type { CreateEngine } from "../core/Engine";
 
 type DefaultOptions = {
     type: 'default';
     loadingManager?: LoadingManager;
+    template?: CreateEngine;
     defaultData?: {
         size?: number;
         color?: number;
@@ -33,7 +35,7 @@ type DefaultOptions = {
 type PointOptions = {
     type: 'point';
     loadingManager?: LoadingManager;
-    renderer?: WebGLRenderer;
+    template?: CreateEngine;
     pointData?: {
         env: string[];
         config: {
@@ -55,7 +57,7 @@ export class TeleportHelper {
     public floor?: Mesh;
 
     private _loadingManager?: LoadingManager;
-    private _renderer?: WebGLRenderer;
+    private _template?: CreateEngine;
     private _pmremGenerator?: PMREMGenerator;
 
     private constructor() { }
@@ -65,7 +67,7 @@ export class TeleportHelper {
         helper._loadingManager = options.loadingManager;
 
         if (options.type === 'point') {
-            helper._renderer = options.renderer;
+            helper._template = options.template;
         }
         switch (options.type) {
             case 'default':
@@ -113,8 +115,8 @@ export class TeleportHelper {
     }) {
         if (!data?.env?.length || !this._loadingManager) return;
 
-        if (this._renderer) {
-            this._pmremGenerator = new PMREMGenerator(this._renderer);
+        if (this._template?.Renderer) {
+            this._pmremGenerator = new PMREMGenerator(this._template?.Renderer);
             this._pmremGenerator.compileEquirectangularShader()
         }
 
@@ -145,7 +147,14 @@ export class TeleportHelper {
                 const circle = new Mesh(geometry, material);
                 circle.position.copy(point);
 
-                circle.userData.tts = config.tts[pointIndex];
+
+                if (config.tts) {
+                    const url = config.tts[pointIndex];
+                    if(!url) return;
+
+                    const audio = this._template?.setAudio(url, false);
+                    circle.userData.sound = audio;
+                }
 
                 const targetIndex = config.target[pointIndex];
                 if (typeof targetIndex === 'number') {
@@ -183,7 +192,7 @@ export class TeleportHelper {
         const text = new Text();
         text.text = name;
         text.fontSize = 0.25;
-        text.color = 0x333333;
+        text.color = 0x4293f5;
         text.anchorX = 'center';
         text.anchorY = 'bottom';
         text.outlineWidth = 0.005;
@@ -197,7 +206,7 @@ export class TeleportHelper {
         const isJPG = path.endsWith('.jpg') || path.endsWith('.jpeg') || path.endsWith('.png');
 
         if (isJPG) {
-            const loader = new HDRJPGLoader(this._renderer);
+            const loader = new HDRJPGLoader(this._template?.Renderer);
             return new Promise(async (resolve, reject) => {
                 try {
                     const result = await loader.loadAsync(path);

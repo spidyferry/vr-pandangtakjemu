@@ -32,6 +32,9 @@ export class TeleportPointSystem extends System {
                         });
                     }
 
+                    if(object?.userData.sound){
+                        object.userData.sound.play();
+                    }
 
                     // const ttsText = object?.userData.tts as string | undefined;
                     // if (ttsText && typeof ttsText === 'string') {

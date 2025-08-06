@@ -12,6 +12,8 @@ const loadingText = ref<HTMLDivElement>();
 const showAudioPrompt = ref<boolean>(true);
 const showAudioPopup = ref<boolean>(true);
 let backsound: THREE.Audio | null = null;
+let introSound: THREE.Audio | null = null;
+
 
 let template: InstanceType<typeof Template.VR> | null = null;
 let register: Register;
@@ -39,7 +41,9 @@ onMounted(async () => {
     getActiveCamera()?.getWorldPosition(WorldPosition);
     await HandleTeleports();
 
-    backsound = template.setAudio('/sounds/sounds-effect-nature.mp3');
+    backsound = template.setAudio('/sounds/sounds-effect-nature.mp3', true);
+    introSound = template.setAudio('/sounds/intro.mp3', false);
+
 
     if (navigator.xr) {
         navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
@@ -48,6 +52,7 @@ onMounted(async () => {
                 template?.Renderer.xr.addEventListener('sessionstart', () => {
                     if (!backsound?.isPlaying) {
                         backsound?.play();
+                        introSound?.play();
                     }
                 })
             } else {
@@ -67,16 +72,10 @@ const handleAudioConsent = async (consent: boolean) => {
     if (consent && template) {
         try {
             backsound?.play();
+            introSound?.play();
         } catch (err) {
             console.warn("Gagal memutar audio:", err);
         }
-
-        const utter = new SpeechSynthesisUtterance(
-            'Selamat datang di kampung Kampung Tua Bakau Serip, Nongsa, Batam, Provinsi Kepulauan Riau, Indonesia'
-        );
-        utter.lang = "id-ID";
-        speechSynthesis.cancel();
-        speechSynthesis.speak(utter);
     }
 };
 
@@ -92,7 +91,7 @@ const HandleTeleports = async () => {
 
     const teleport = await TeleportHelper.create({
         type: 'point',
-        renderer: template.Renderer,
+        template: template,
         loadingManager: template?.LoadingManager,
         pointData: {
             env: [
@@ -106,14 +105,15 @@ const HandleTeleports = async () => {
             config: [
                 {
                     points: [
-                        new THREE.Vector3(3, 1.6, 0),
+                        new THREE.Vector3(3, 1.2, 0),
                     ], // 3, 0, 0
                     target: [1],
                     rotation: [
                         new THREE.Vector3(0, -90, 0),
                     ],// -90
                     tts: [
-                        'Anda berada di lorong tracking',
+                        '/sounds/Lorong Tracking.mp3'
+
                     ],
                     name: [
                         'Lorong Tracking'
@@ -121,8 +121,8 @@ const HandleTeleports = async () => {
                 },
                 {
                     points: [
-                        new THREE.Vector3(-2, 1.6, -1.2), //mundur 
-                        new THREE.Vector3(2, 1.6, 1.2) // maju
+                        new THREE.Vector3(-2, 1.2, -1.2), //mundur 
+                        new THREE.Vector3(2, 1.2, 1.2) // maju
                     ],
                     target: [0, 2],
                     rotation: [
@@ -130,8 +130,8 @@ const HandleTeleports = async () => {
                         new THREE.Vector3(0, -120, 0)
                     ],
                     tts: [
-                        'Sekarang anda berada di gerbang area tracking',
-                        'anda berada di lapangan mangrove'
+                        '/sounds/Gerbang Tracking.mp3',
+                        '/sounds/Lapangan Mangrove.mp3'
                     ],
                     name: [
                         'Gerbang Area Tracking',
@@ -140,10 +140,10 @@ const HandleTeleports = async () => {
                 },
                 {
                     points: [
-                        new THREE.Vector3(.5, 1.6, -1.5), // kiri
-                        new THREE.Vector3(-1.5, 1.6, 2.25), //tengah
-                        new THREE.Vector3(1, 1.6, 3), // kanan
-                        new THREE.Vector3(2, 1.6, -4) // mundur
+                        new THREE.Vector3(.5, 1.2, -1.5), // kiri
+                        new THREE.Vector3(-1.5, 1.2, 2.25), //tengah
+                        new THREE.Vector3(1, 1.2, 3), // kanan
+                        new THREE.Vector3(2, 1.2, -4) // mundur
                     ],
                     target: [3, 5, 4, 1],
                     rotation: [
@@ -153,10 +153,10 @@ const HandleTeleports = async () => {
                         new THREE.Vector3(0, -45, 0)
                     ],
                     tts: [
-                        'anda berada di Pojok Literasi',
-                        'anda berada di Lorong Cinta',
-                        'anda berada di View Negara Jiran',
-                        'anda berada di lorong tracking',
+                        '/sounds/Pojok Literasi.mp3',
+                        '/sounds/Lorong Cinta.mp3',
+                        '/sounds/View Negara Jiran.mp3',
+                        '/sounds/Lorong Tracking.mp3',
                     ], name: [
                         'Pojok Literasi',
                         'Lorong Cinta',
@@ -165,31 +165,31 @@ const HandleTeleports = async () => {
                     ]
                 },
                 {
-                    points: [new THREE.Vector3(-.5, 1.6, 3)],
+                    points: [new THREE.Vector3(-.5, 1.2, 3)],
                     target: [2],
                     rotation: [new THREE.Vector3(0, 180, 0)],
                     tts: [
-                        'Anda berada di lapangan mangrove',
+                        '/sounds/Lapangan Mangrove.mp3',
                     ], name: [
                         'Lapangan Mangrove'
                     ]
                 },
                 {
-                    points: [new THREE.Vector3(-2.5, 1.6, 1.5)],
+                    points: [new THREE.Vector3(-2.5, 1.2, 1.5)],
                     target: [2],
                     rotation: [new THREE.Vector3(0, 60, 0)],
                     tts: [
-                        'Anda berada di lapangan mangrove',
+                       '/sounds/Lapangan Mangrove.mp3',
                     ], name: [
                         'Lapangan Mangrove'
                     ]
                 },
                 {
-                    points: [new THREE.Vector3(-2.5, 1.6, -2)],
+                    points: [new THREE.Vector3(-2.5, 1.2, -2)],
                     target: [2],
                     rotation: [new THREE.Vector3(0, 50, 0)],
                     tts: [
-                        'Anda berada di lapangan mangrove',
+                        '/sounds/Lapangan Mangrove.mp3',
                     ], name: [
                         'Lapangan Mangrove'
                     ]
@@ -254,7 +254,7 @@ const animate = () => {
         <!-- Popup untuk enable audio -->
         <div v-if="showAudioPrompt" class="audio-popup">
             <div class="audio-popup-content">
-                <p>Aktifkan suara untuk pengalaman lebih imersif?</p>
+                <p>Aktifkan suara?</p>
                 <div class="buttons">
                     <button @click="handleAudioConsent(true)">Ya</button>
                     <button @click="handleAudioConsent(false)">Tidak</button>

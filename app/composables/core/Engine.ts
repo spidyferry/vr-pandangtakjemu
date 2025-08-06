@@ -163,7 +163,7 @@ export class CreateEngine implements IEngine {
 
     const geometry = new THREE.BufferGeometry().setFromPoints([
       new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0, 0, -1),
+      new THREE.Vector3(0, 0, -5),
     ]);
 
     const line = new THREE.Line(geometry, material);
@@ -262,7 +262,7 @@ export class CreateEngine implements IEngine {
    * @param url - The URL of the audio file.
    * @returns The THREE.Audio instance (not yet playing).
    */
-  public setAudio(url: string): THREE.Audio {
+  public setAudio(url: string, isLoop: boolean = true): THREE.Audio {
     this.LoadingManager.itemStart(url); // Notify start to LoadingManager
 
     const sound = new THREE.Audio(this.AudioListener);
@@ -271,7 +271,7 @@ export class CreateEngine implements IEngine {
       url,
       (buffer) => {
         sound.setBuffer(buffer);
-        sound.setLoop(true);
+        sound.setLoop(isLoop);
         sound.setVolume(0.25);
         this.LoadingManager.itemEnd(url);
       },
