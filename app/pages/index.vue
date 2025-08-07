@@ -23,6 +23,9 @@ onMounted(async () => {
     if (!container.value) return;
 
     template = new Template.VR(container.value);
+    container.value.appendChild(template?.Renderer.domElement);
+    template.orbitControls.target.set(3, 1.2, 0);
+
     template.Renderer.setAnimationLoop(animate);
     register = new Register();
 
@@ -235,7 +238,7 @@ const animate = () => {
     if (template?.orbitControls) {
         template.orbitControls.update()
     }
-    template?.render();
+    template?.Renderer.render(template?.Scene, template?.Camera);
 }
 </script>
 

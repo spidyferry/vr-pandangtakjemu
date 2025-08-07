@@ -15,20 +15,8 @@ export class VR extends CreateEngine {
                             optionalFeatures: optionalFeatures
                         })
                     );
-                } else {
-                    this.initFallback(container);
                 }
-            }).catch(() => {
-                this.initFallback(container);
-            });
-        } else {
-            this.initFallback(container);
-        }
+            })
+        } 
     }
-
-    private initFallback(container: HTMLElement) {
-        this.orbitControls.target.set(3, 0, 0);
-        container.appendChild(this.Renderer.domElement);
-    }
-
 }

@@ -44,7 +44,7 @@ export class CreateEngine implements IEngine {
     this.Scene.background = new THREE.Color(0x808080);
 
     this.Camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    this.Camera.position.set(0, 1.6, 0);
+    this.Camera.position.set(0, 0, 1);
     this.Camera.add(this.AudioListener);
     this.Player.add(this.Camera);
 

@@ -32,8 +32,10 @@ export class TeleportPointSystem extends System {
                         });
                     }
 
-                    if(object?.userData.sound){
-                        object.userData.sound.play();
+                    if (object?.userData.sound) {
+                        setTimeout(() => {
+                            object.userData.sound.play();
+                        }, 700)
                     }
 
                     // const ttsText = object?.userData.tts as string | undefined;
