@@ -114,3 +114,28 @@ body {
 .audio-popup button:hover {
     background-color: #1565c0;
 }
+
+#VRButton {
+  all: unset !important; /* Hapus semua inline styling */
+  width: 100px;
+  position: absolute !important;
+  bottom: 20px !important;
+  left: calc(50% - 50px) !important;
+  padding: 14px 28px !important;
+  font-size: 13px !important;
+  font-family: 'Segoe UI', sans-serif !important;
+  font-weight: 600 !important;
+  background: linear-gradient(135deg, #1e88e5, #42a5f5) !important;
+  border-radius: 4px !important;
+  color: white !important;
+  cursor: pointer !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.3s ease !important;
+  z-index: 9999 !important;
+}
+
+#VRButton:hover {
+  background: linear-gradient(135deg, #1565c0, #1e88e5) !important;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3) !important;
+  transform: scale(1.05) !important;
+}
