@@ -10,6 +10,7 @@ export class VR extends CreateEngine {
             navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
                 if (supported) {
                     this.Renderer.xr.enabled = true;
+                    container.appendChild(this.Renderer.domElement);
                     container.appendChild(
                         VRButton.createButton(this.Renderer, {
                             optionalFeatures: optionalFeatures

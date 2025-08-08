@@ -285,6 +285,8 @@ export class Register {
                             }
                         })
                     });
+
+                    /*
                     if (navigator.xr) {
                         navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
                             if (supported) {
@@ -354,7 +356,7 @@ export class Register {
                         });
                     }
 
-
+                    */
                     break;
                 }
 
