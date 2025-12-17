@@ -110,24 +110,24 @@ const HandleTeleports = async () => {
             config: [
                 {
                     points: [
-                        new THREE.Vector3(3, 1.2, 0),
+                        new THREE.Vector3(0, 1.2, -7),
                     ], // 3, 0, 0
                     target: [1],
                     rotation: [
-                        new THREE.Vector3(0, -90, 0),
+                        new THREE.Vector3(0, 0, 0),
                     ],// -90
                     tts: [
                         '/sounds/Lorong Tracking.mp3'
 
                     ],
                     name: [
-                        'Lorong Tracking'
+                        //'Lorong Tracking'
                     ]
                 },
                 {
                     points: [
                         new THREE.Vector3(-2, 1.2, -1.2), //mundur 
-                        new THREE.Vector3(2, 1.2, 1.2) // maju
+                        new THREE.Vector3(2, 1.2, 1.2) //maju
                     ],
                     target: [0, 2],
                     rotation: [
