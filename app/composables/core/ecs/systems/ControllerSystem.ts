@@ -32,7 +32,7 @@ export class ControllerSystem extends System {
         this.queries.controllers?.results.forEach(controllerEntity => {
             const components = controllerEntity.getComponent(ControllerComponent);
             const object = controllerEntity.getComponent(Object3DComponent)?.object;
-            if (!components || !object) return;
+            if (!components || !object || !object.parent?.visible) return;
 
             const session = components.renderer.xr.getSession();
             if (!session) return;
@@ -368,7 +368,8 @@ export class ControllerSystem extends System {
         if (entity.hasComponent(TeleportPointComponent)) {
             const component = entity.getMutableComponent(TeleportPointComponent);
             if (!component) return;
-
+            
+            console.log(component);
             component.state = 'none';
             this._updateColor(controller, 0xffffff);
         }

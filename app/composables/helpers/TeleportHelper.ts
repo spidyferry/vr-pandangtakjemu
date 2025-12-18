@@ -145,6 +145,7 @@ export class TeleportHelper {
 
                 const geometry = new CircleGeometry(0.25, 32);//.rotateX(-Math.PI / 2);
                 const circle = new Mesh(geometry, material);
+                circle.name = `${pointIndex}`;
                 circle.position.copy(point);
 
 

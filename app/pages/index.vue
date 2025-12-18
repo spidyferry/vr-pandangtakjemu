@@ -108,9 +108,9 @@ const HandleTeleports = async () => {
                 '/hdr/6.jpg'
             ],
             config: [
-                {
+                 {
                     points: [
-                        new THREE.Vector3(0, 1.2, -7),
+                        new THREE.Vector3(0, 1.4, -3),
                     ], // 3, 0, 0
                     target: [1],
                     rotation: [
@@ -121,26 +121,23 @@ const HandleTeleports = async () => {
 
                     ],
                     name: [
-                        //'Lorong Tracking'
+                        'Desa Wisata Pandang Tak Jemu'
                     ]
                 },
                 {
                     points: [
-                        new THREE.Vector3(-2, 1.2, -1.2), //mundur 
-                        new THREE.Vector3(2, 1.2, 1.2) //maju
-                    ],
-                    target: [0, 2],
+                        new THREE.Vector3(0, 1.4, -3),
+                    ], // 3, 0, 0
+                    target: [2],
                     rotation: [
-                        new THREE.Vector3(0, 60, 0),
-                        new THREE.Vector3(0, -120, 0)
-                    ],
+                        new THREE.Vector3(0, 0, 0),
+                    ],// -90
                     tts: [
-                        '/sounds/Gerbang Tracking.mp3',
-                        '/sounds/Lapangan Mangrove.mp3'
+                        '/sounds/Lorong Tracking.mp3'
+
                     ],
                     name: [
-                        'Gerbang Area Tracking',
-                        'Lapangan Mangrove'
+                        'Desa Wisata Pandang Tak Jemu'
                     ]
                 },
                 {
