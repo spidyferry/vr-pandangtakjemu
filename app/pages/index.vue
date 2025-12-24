@@ -100,102 +100,530 @@ const HandleTeleports = async () => {
         loadingManager: template?.LoadingManager,
         pointData: {
             env: [
-                '/hdr/1.jpg',
-                '/hdr/2.jpg',
-                '/hdr/3.jpg',
-                '/hdr/4.jpg',
-                '/hdr/5.jpg',
-                '/hdr/6.jpg'
+                '/hdr/1.hdr',
+                '/hdr/2.hdr',
+                '/hdr/3.hdr',
+                '/hdr/4.hdr',
+                '/hdr/5.hdr',
+                '/hdr/6.hdr',
+                '/hdr/7.hdr',
+                '/hdr/8.hdr',
+                '/hdr/9.hdr',
+                '/hdr/10.hdr',
+                '/hdr/11.hdr',
+                '/hdr/12.hdr',
+                '/hdr/13.hdr',
+                '/hdr/14.hdr',
+                '/hdr/15.hdr',
+                '/hdr/16.hdr',
+                '/hdr/17.hdr',
+                '/hdr/18.hdr',
+                '/hdr/19.hdr',
+                '/hdr/20.hdr',
+                '/hdr/21.hdr',
+                '/hdr/22.hdr',
+                '/hdr/23.hdr',
+                '/hdr/24.hdr',
+                '/hdr/25.hdr',
+                '/hdr/26.hdr'
             ],
             config: [
-                 {
+                {
                     points: [
                         new THREE.Vector3(0, 1.4, -3),
-                    ], // 3, 0, 0
+                    ],
                     target: [1],
                     rotation: [
                         new THREE.Vector3(0, 0, 0),
-                    ],// -90
+                    ],
                     tts: [
-                        '/sounds/Lorong Tracking.mp3'
-
+                        '/sounds/silent.mp3'
                     ],
                     name: [
-                        'Desa Wisata Pandang Tak Jemu'
+                        'Ekowisata Pandang Tak Jemu'
                     ]
                 },
                 {
                     points: [
                         new THREE.Vector3(0, 1.4, -3),
-                    ], // 3, 0, 0
-                    target: [2],
+                        new THREE.Vector3(-1, 1.4, 3),
+                    ],
+                    target: [2,0],
                     rotation: [
                         new THREE.Vector3(0, 0, 0),
-                    ],// -90
+                        new THREE.Vector3(0, 180, 0)
+                    ],
                     tts: [
-                        '/sounds/Lorong Tracking.mp3'
-
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
                     ],
                     name: [
-                        'Desa Wisata Pandang Tak Jemu'
+                        '.',
+                        'Gerbang Ekowisata'
                     ]
                 },
                 {
                     points: [
-                        new THREE.Vector3(.5, 1.2, -1.5), // kiri
-                        new THREE.Vector3(-1.5, 1.2, 2.25), //tengah
-                        new THREE.Vector3(1, 1.2, 3), // kanan
-                        new THREE.Vector3(2, 1.2, -4) // mundur
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(0, 1.4, 3),
                     ],
-                    target: [3, 5, 4, 1],
+                    target: [3,1],
                     rotation: [
                         new THREE.Vector3(0, 0, 0),
-                        new THREE.Vector3(0, 90, 0),
+                        new THREE.Vector3(0, 180, 0)
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(0, 1.4, 3),
+                        new THREE.Vector3(3, 1.4, 0),
+                        new THREE.Vector3(-3, 1.4, 0)
+                    ],
+                    target: [4,2,12,17],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
                         new THREE.Vector3(0, 180, 0),
-                        new THREE.Vector3(0, -45, 0)
+                        new THREE.Vector3(0, -90, 0),
+                        new THREE.Vector3(0, -270, 0)
+                    ],
+                    tts: [
+                        '/sounds/Gerbang Tracking.mp3',
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.',
+                        'Pusat Souvenir',
+                        'Panggung'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(0, 1.4, 3),
+                    ],
+                    target: [5,3],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, 180, 0)
+                    ],
+                    tts: [
+                        '/sounds/Lorong Cinta.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        'Lorong Cinta',
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(0, 1.4, 3),
+                    ],
+                    target: [6,4],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, 180, 0)
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(0, 1.4, 3),
+                        new THREE.Vector3(3, 1.4, 0),
+                        new THREE.Vector3(-3, 1.4, 0)
+                    ],
+                    target: [7,19,23,4],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, 180, 0),
+                        new THREE.Vector3(0, -90, 0),
+                        new THREE.Vector3(0, -270, 0)
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        'Pojok Literasi',
+                        'Pendopo',
+                        'Pohon Bakau 100 Tahun',
+                        'Lorong Cinta'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(0, 1.4, 3),
+                    ],
+                    target: [8,6],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, 180, 0)
                     ],
                     tts: [
                         '/sounds/Pojok Literasi.mp3',
-                        '/sounds/Lorong Cinta.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(0, 1.4, 3),
+                    ],
+                    target: [9,7],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, 180, 0)
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(0, 1.4, 3),
+                    ],
+                    target: [10,8],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, 180, 0)
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(0, 1.4, 3),
+                    ],
+                    target: [11,9],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, 180, 0)
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                    ],
+                    target: [10],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                    ],
+                    tts: [
+                        '/sounds/Lapangan Mangrove.mp3'
+
+                    ],
+                    name: [
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(-3, 1.4, 0),
+                    ],
+                    target: [13,3],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, -270, 0)
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(0, 1.4, 3),
+                    ],
+                    target: [14,12],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, 180, 0)
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(0, 1.4, 3),
+                    ],
+                    target: [15,13],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, 180, 0)
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(0, 1.4, 3),
+                    ],
+                    target: [16,14],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, 180, 0)
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(-3, 1.4, -3),
+                        new THREE.Vector3(-2, 1.4, 3),
+                    ],
+                    target: [4,16],
+                    rotation: [
+                        new THREE.Vector3(0, -110, 0),
+                        new THREE.Vector3(0, 160, 0)
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(-3, 1.4, 0),
+                    ],
+                    target: [18,3],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, -270, 0)
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                    ],
+                    target: [17],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3'
+
+                    ],
+                    name: [
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(3, 1.4, 0),
+                        new THREE.Vector3(-3, 1.4, 0)
+                    ],
+                    target: [20,6,21],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, -90, 0),
+                        new THREE.Vector3(0, -270, 0)
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        'Titik Kumpul',
+                        'View Negara Jiran'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                    ],
+                    target: [19],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3'
+
+                    ],
+                    name: [
+                        'Keluar dari Pendopo'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(0, 1.4, 3),
+                    ],
+                    target: [22,19],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, 180, 0)
+                    ],
+                    tts: [
                         '/sounds/View Negara Jiran.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                    ],
+                    target: [21],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                    ],
+                    tts: [
+                        '/sounds/silent.mp3'
+
+                    ],
+                    name: [
+                        '.'
+                    ]
+                },
+                {
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(0, 1.4, 3),
+                    ],
+                    target: [24,6],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, 180, 0)
+                    ],
+                    tts: [
                         '/sounds/Lorong Tracking.mp3',
-                    ], name: [
-                        'Pojok Literasi',
-                        'Lorong Cinta',
-                        'View Negara Jiran',
-                        'Lorong Tracking'
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.'
                     ]
                 },
                 {
-                    points: [new THREE.Vector3(-.5, 1.2, 3)],
-                    target: [2],
-                    rotation: [new THREE.Vector3(0, 180, 0)],
+                    points: [
+                        new THREE.Vector3(0, 1.4, -3),
+                        new THREE.Vector3(0, 1.4, 3),
+                    ],
+                    target: [25,23],
+                    rotation: [
+                        new THREE.Vector3(0, 0, 0),
+                        new THREE.Vector3(0, 180, 0)
+                    ],
                     tts: [
-                        '/sounds/Lapangan Mangrove.mp3',
-                    ], name: [
-                        'Lapangan Mangrove'
+                        '/sounds/silent.mp3',
+                        '/sounds/silent.mp3'
+                    ],
+                    name: [
+                        '.',
+                        '.'
                     ]
                 },
                 {
-                    points: [new THREE.Vector3(-2.5, 1.2, 1.5)],
-                    target: [2],
-                    rotation: [new THREE.Vector3(0, 60, 0)],
+                    points: [
+                        new THREE.Vector3(0, 1.4, 3),
+                    ],
+                    target: [24],
+                    rotation: [
+                        new THREE.Vector3(0, 180, 0),
+                    ],
                     tts: [
-                        '/sounds/Lapangan Mangrove.mp3',
-                    ], name: [
-                        'Lapangan Mangrove'
+                        '/sounds/silent.mp3'
+
+                    ],
+                    name: [
+                        '.'
                     ]
                 },
-                {
-                    points: [new THREE.Vector3(-2.5, 1.2, -2)],
-                    target: [2],
-                    rotation: [new THREE.Vector3(0, 50, 0)],
-                    tts: [
-                        '/sounds/Lapangan Mangrove.mp3',
-                    ], name: [
-                        'Lapangan Mangrove'
-                    ]
-                },
+                
             ]
         }
     });
